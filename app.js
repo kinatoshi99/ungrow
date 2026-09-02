@@ -1,10 +1,28 @@
 const characters = window.UngrowCharacters;
+const roastModes = window.UngrowRoastModes;
 const plantRenderers = {
   somchai: window.UngrowPlantSvg,
   ploy: window.UngrowPloySvg
 };
 
-const DEFAULT_STATE = { characterId: "somchai", health: 89 };
+const DEFAULT_STATE = { characterId: "somchai", health: 89, roastMode: 2 };
+let pendingExplicitFromUrl = false;
+let pendingExplicitRoastIndex = 0;
+
+function has18Confirmation() {
+  try { return window.sessionStorage.getItem("ungrow18Confirmed") === "1"; }
+  catch (_) { return false; }
+}
+
+function confirm18Session() {
+  try { window.sessionStorage.setItem("ungrow18Confirmed", "1"); }
+  catch (_) {}
+}
+
+function roastsForCharacter(character, level) {
+  const slangRoasts = roastModes.examplesFor(character.id, level);
+  return level === 2 ? [...character.roasts, ...slangRoasts] : slangRoasts;
+}
 
 function readStateFromUrl() {
   const params = new URLSearchParams(window.location.search);
@@ -15,11 +33,25 @@ function readStateFromUrl() {
   const health = Number.isFinite(requestedHealth)
     ? Math.max(0, Math.min(100, requestedHealth))
     : DEFAULT_STATE.health;
+  const parsedMode = Number.parseInt(params.get("m"), 10);
+  const requestedMode = [1, 2, 3, 4].includes(parsedMode) ? parsedMode : DEFAULT_STATE.roastMode;
   const requestedRoast = Number.parseInt(params.get("r"), 10);
-  const roastIndex = Number.isInteger(requestedRoast) && requestedRoast >= 0 && requestedRoast < character.roasts.length
+  let roastMode = requestedMode;
+
+  if (requestedMode === 4 && !has18Confirmation()) {
+    pendingExplicitFromUrl = true;
+    pendingExplicitRoastIndex = Number.isInteger(requestedRoast) ? requestedRoast : 0;
+    roastMode = DEFAULT_STATE.roastMode;
+  }
+
+  const pool = roastsForCharacter(character, roastMode);
+  const defaultRoastIndex = roastMode === DEFAULT_STATE.roastMode
+    ? Math.min(character.roasts.length - 1, pool.length - 1)
+    : 0;
+  const roastIndex = Number.isInteger(requestedRoast) && requestedRoast >= 0 && requestedRoast < pool.length
     ? requestedRoast
-    : character.roasts.length - 1;
-  return { characterId, health, roastIndex };
+    : defaultRoastIndex;
+  return { characterId, health, roastMode, roastIndex };
 }
 
 const state = readStateFromUrl();
@@ -36,8 +68,9 @@ let exportRenderToken = 0;
 let exportTimer = null;
 
 function currentCharacter() { return characters[state.characterId] || characters.somchai; }
+function currentRoasts() { return roastsForCharacter(currentCharacter(), state.roastMode); }
 function currentRoast() {
-  const roasts = currentCharacter().roasts;
+  const roasts = currentRoasts();
   return roasts[state.roastIndex % roasts.length];
 }
 function currentAward() {
@@ -56,6 +89,7 @@ function buildShareUrl({ preserveOtherParams = false } = {}) {
   if (!preserveOtherParams) url.search = "";
   url.searchParams.set("c", state.characterId);
   url.searchParams.set("h", String(state.health));
+  url.searchParams.set("m", String(state.roastMode));
   url.searchParams.set("r", String(state.roastIndex));
   url.hash = "";
   return url.toString();
@@ -81,6 +115,12 @@ function renderUI() {
     const selected = button.dataset.characterId === character.id;
     button.setAttribute("aria-pressed", String(selected));
   });
+  qsa("[data-roast-mode]").forEach(button => {
+    const selected = Number(button.dataset.roastMode) === state.roastMode;
+    button.setAttribute("aria-pressed", String(selected));
+  });
+  const modeMeta = roastModes.modes[String(state.roastMode)];
+  qsa("[data-roast-mode-description]").forEach(el => { el.textContent = modeMeta.description; });
   qsa("[data-owner-skill-value]").forEach(el => { el.textContent = ownerSkillText; });
   qsa("[data-owner-skill-bar]").forEach(el => { el.style.width = ownerSkillText; });
   qsa("[data-health-value]").forEach(el => { el.textContent = healthText; });
@@ -104,14 +144,34 @@ function setHealth(value) {
 function setCharacter(characterId) {
   if (!characters[characterId] || characterId === state.characterId) return;
   state.characterId = characterId;
-  state.roastIndex = Math.min(state.roastIndex, currentCharacter().roasts.length - 1);
+  state.roastIndex = Math.min(state.roastIndex, currentRoasts().length - 1);
   latestExportBlob = null;
   syncStateToUrl();
   renderUI();
 }
 
+function applyRoastMode(level, preferredIndex = state.roastIndex) {
+  state.roastMode = level;
+  const roasts = currentRoasts();
+  state.roastIndex = Math.max(0, Math.min(preferredIndex, roasts.length - 1));
+  latestExportBlob = null;
+  syncStateToUrl();
+  renderUI();
+}
+
+function requestRoastMode(level) {
+  if (![1, 2, 3, 4].includes(level) || level === state.roastMode) return;
+  if (level === 4 && !has18Confirmation()) {
+    pendingExplicitFromUrl = false;
+    pendingExplicitRoastIndex = state.roastIndex;
+    showAgeGate();
+    return;
+  }
+  applyRoastMode(level);
+}
+
 function nextRoast() {
-  const roasts = currentCharacter().roasts;
+  const roasts = currentRoasts();
   let next = state.roastIndex;
   while (next === state.roastIndex && roasts.length > 1) next = Math.floor(Math.random() * roasts.length);
   state.roastIndex = next;
@@ -505,15 +565,72 @@ async function shareStateLink() {
   }
 }
 
+function ageGateElements() {
+  return {
+    dialog: document.querySelector("#ageGateDialog"),
+    check: document.querySelector("#ageGateCheck"),
+    confirm: document.querySelector('[data-action="age-confirm"]')
+  };
+}
+
+function showAgeGate() {
+  const { dialog, check, confirm } = ageGateElements();
+  if (!dialog) return;
+  if (check) check.checked = false;
+  if (confirm) confirm.disabled = true;
+  if (typeof dialog.showModal === "function") {
+    if (!dialog.open) dialog.showModal();
+  } else {
+    dialog.setAttribute("open", "");
+  }
+}
+
+function closeAgeGate() {
+  const { dialog } = ageGateElements();
+  if (!dialog) return;
+  if (typeof dialog.close === "function" && dialog.open) dialog.close();
+  else dialog.removeAttribute("open");
+}
+
+function cancelAgeGate() {
+  closeAgeGate();
+  if (pendingExplicitFromUrl) {
+    pendingExplicitFromUrl = false;
+    syncStateToUrl();
+  }
+}
+
+function confirmAgeGate() {
+  const { check } = ageGateElements();
+  if (!check?.checked) return;
+  confirm18Session();
+  const preferredIndex = pendingExplicitFromUrl ? pendingExplicitRoastIndex : state.roastIndex;
+  pendingExplicitFromUrl = false;
+  closeAgeGate();
+  applyRoastMode(4, preferredIndex);
+}
+
 qsa("[data-character-id]").forEach(button => button.addEventListener("click", () => setCharacter(button.dataset.characterId)));
+qsa("[data-roast-mode]").forEach(button => button.addEventListener("click", () => requestRoastMode(Number(button.dataset.roastMode))));
 qsa("[data-health-slider]").forEach(slider => slider.addEventListener("input", e => setHealth(e.target.value)));
 qsa('[data-action="roast"]').forEach(button => button.addEventListener("click", nextRoast));
 qsa('[data-action="shame"]').forEach(button => button.addEventListener("click", showExportLab));
 qsa('[data-action="save-export"]').forEach(button => button.addEventListener("click", saveExport));
 qsa('[data-action="share-link"]').forEach(button => button.addEventListener("click", shareStateLink));
+qsa('[data-action="age-cancel"]').forEach(button => button.addEventListener("click", cancelAgeGate));
+qsa('[data-action="age-confirm"]').forEach(button => button.addEventListener("click", confirmAgeGate));
+document.querySelector("#ageGateCheck")?.addEventListener("change", event => {
+  const button = document.querySelector('[data-action="age-confirm"]');
+  if (button) button.disabled = !event.target.checked;
+});
+document.querySelector("#ageGateDialog")?.addEventListener("cancel", event => {
+  event.preventDefault();
+  cancelAgeGate();
+});
 qsa('[data-action="close-export"]').forEach(button => button.addEventListener("click", closeExportLab));
 mobileViewport.addEventListener?.("change", () => {
   if (activeExportLab) syncExportContext({ scroll: false });
 });
 
 renderUI();
+if (pendingExplicitFromUrl) requestAnimationFrame(showAgeGate);

@@ -7,6 +7,9 @@ Ungrow is a deliberately ridiculous open-source experiment starring **SOMCHAI th
 ## What works
 
 - 🌱 Selectable SOMCHAI + PLOY characters with shared state/rendering
+- 🎚️ Four Roast Modes: เกรงใจ / แซ่บ / ปากหมา / 18+
+- 🗯️ Curated 50-entry Thai social-slang bank with SOMCHAI + PLOY examples
+- 🔞 18+ self-attestation gate stored only in `sessionStorage`
 - 🔗 Shareable character-state URLs (`?c=ploy&h=23&r=4`)
 - 🐍 Health-reactive SOMCHAI SVG character
 - 🤍 Health-reactive PLOY Peace Lily SVG character
@@ -49,6 +52,7 @@ desktop-ui.css      # Desktop-only composition
 mobile-ui-v2.css    # Mobile-only composition
 export-card.css     # Export Lab / Canvas preview
 characters.js       # Shared SOMCHAI/PLOY character data
+roast-modes.js       # 50 slang entries, intensity levels, character roast examples
 plant-svg.js        # SOMCHAI SVG renderer + health states
 ploy-svg.js         # PLOY Peace Lily SVG renderer + health states
 app.js              # Character-aware shared state, interactions, PNG/share logic
@@ -61,6 +65,12 @@ python3 -m http.server 8000
 ```
 
 Then open `http://localhost:8000`.
+
+## Roast modes
+
+Roast intensity is data-driven through `roast-modes.js`. Mode 2 keeps the original SOMCHAI/PLOY roast order at the front of the pool so existing shared `r=` URLs remain stable. Share URLs now use `c`, `h`, `m`, and `r`. A shared `m=4` link never bypasses the 18+ gate in a fresh session.
+
+The slang bank mixes 2026 Thai social-trend terms with a clearly separated evergreen adult-colloquial tier. The 1–4 levels are Ungrow editorial intensity labels, not linguistic or legal classifications.
 
 ## Contribute nonsense
 
@@ -76,7 +86,8 @@ Good first contribution ideas:
 
 - `v0.0.1` — SOMCHAI Roast Button + health damage + export card ✅
 - `v0.0.2` — Shared character data model + PLOY Peace Lily ✅
-- `v0.0.3` — Third plant character / easier community contributions
+- `v0.0.3` — Roast modes + 50-entry slang bank + 18+ gate + shareable `m=` state ✅
+- `v0.0.4` — Third plant character / easier community contributions
 
 ## License
 

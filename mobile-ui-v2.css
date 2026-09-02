@@ -6,6 +6,10 @@
   .mobile-topline{display:flex;align-items:center;justify-content:space-between;gap:12px}
   .mobile-head .brand{font-size:10px;letter-spacing:.1em}
   .mobile-repo{min-height:44px;display:inline-flex;align-items:center;color:var(--ink);font-size:12px;font-weight:900;text-decoration:none;padding:0 4px}
+  .mobile-roast-mode-selector{max-width:none;margin-top:10px}
+  .mobile-roast-mode-selector .roast-mode-label{align-items:flex-start}
+  .mobile-roast-mode-selector .roast-mode-label small{max-width:24ch}
+  .mobile-roast-mode-selector .roast-mode-buttons button{min-height:46px;padding:0 5px;font-size:11px}
   .mobile-title{margin:18px 0 0;font-size:clamp(48px,14vw,62px);font-weight:950;letter-spacing:-.055em;line-height:.88}
   .mobile-meta{margin:10px 0 0;color:var(--muted);font-size:15px;font-weight:750}
   .mobile-play{display:grid;gap:16px;margin-top:18px}
@@ -63,3 +67,5 @@
   .mobile-topline>*{min-width:0}
 }
 @media(max-width:767px){.mobile-character-selector{display:grid;grid-template-columns:1fr 1fr;width:100%;margin-top:12px}.mobile-character-selector button{width:100%;padding:0 12px}.mobile-title{margin-top:16px}}
+
+@media(max-width:430px){.age-gate-actions{grid-template-columns:1fr}.age-gate-card{padding:20px}.age-gate h2{font-size:28px}}

@@ -5,10 +5,10 @@
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
   <meta name="description" content="Ungrow v0.0.1 — SOMCHAI Roast Button. An anti-plant-care open source joke project." />
   <title>Ungrow v0.0.1 — SOMCHAI Roast Button</title>
-  <link rel="stylesheet" href="ui-base.css?v=shareurl1" />
-  <link rel="stylesheet" href="desktop-ui.css?v=shareurl1" />
-  <link rel="stylesheet" href="mobile-ui-v2.css?v=shareurl1" />
-  <link rel="stylesheet" href="export-card.css?v=shareurl1" />
+  <link rel="stylesheet" href="ui-base.css?v=roastmode1" />
+  <link rel="stylesheet" href="desktop-ui.css?v=roastmode1" />
+  <link rel="stylesheet" href="mobile-ui-v2.css?v=roastmode1" />
+  <link rel="stylesheet" href="export-card.css?v=roastmode1" />
 </head>
 <body>
   <main id="appRoot">
@@ -20,6 +20,15 @@
             <div class="character-selector" role="group" aria-label="เลือกตัวละครต้นไม้">
               <button type="button" data-character-id="somchai" aria-pressed="true">SOMCHAI</button>
               <button type="button" data-character-id="ploy" aria-pressed="false">PLOY</button>
+            </div>
+            <div class="roast-mode-selector" aria-label="ระดับความแรงของ Roast">
+              <div class="roast-mode-label"><span>Roast mode</span><small data-roast-mode-description>ประชดแรงขึ้น แต่ยังไม่ 18+</small></div>
+              <div class="roast-mode-buttons" role="group" aria-label="เลือกระดับคำด่า">
+                <button type="button" data-roast-mode="1" aria-pressed="false">🙂 เกรงใจ</button>
+                <button type="button" data-roast-mode="2" aria-pressed="true">😏 แซ่บ</button>
+                <button type="button" data-roast-mode="3" aria-pressed="false">🤬 ปากหมา</button>
+                <button type="button" data-roast-mode="4" aria-pressed="false">☠️ 18+</button>
+              </div>
             </div>
             <h1 class="title"><b data-character-name>SOMCHAI</b><span>Roast Button</span></h1>
             <p class="subtitle">Anti-Plant Care Project · Helping plants survive their owners.</p>
@@ -64,6 +73,15 @@
           <div class="character-selector mobile-character-selector" role="group" aria-label="เลือกตัวละครต้นไม้">
             <button type="button" data-character-id="somchai" aria-pressed="true">SOMCHAI</button>
             <button type="button" data-character-id="ploy" aria-pressed="false">PLOY</button>
+          </div>
+          <div class="roast-mode-selector mobile-roast-mode-selector" aria-label="ระดับความแรงของ Roast">
+            <div class="roast-mode-label"><span>Roast mode</span><small data-roast-mode-description>ประชดแรงขึ้น แต่ยังไม่ 18+</small></div>
+            <div class="roast-mode-buttons" role="group" aria-label="เลือกระดับคำด่า">
+              <button type="button" data-roast-mode="1" aria-pressed="false">🙂 เกรงใจ</button>
+              <button type="button" data-roast-mode="2" aria-pressed="true">😏 แซ่บ</button>
+              <button type="button" data-roast-mode="3" aria-pressed="false">🤬 ปากหมา</button>
+              <button type="button" data-roast-mode="4" aria-pressed="false">☠️ 18+</button>
+            </div>
           </div>
           <h1 class="mobile-title" data-character-name>SOMCHAI</h1>
           <p class="mobile-meta" data-character-subtitle>Snake Plant · Stoic Introvert</p>
@@ -135,13 +153,32 @@
       </div>
     </section>
 
+
+    <dialog id="ageGateDialog" class="age-gate" aria-labelledby="ageGateTitle">
+      <div class="age-gate-card">
+        <div class="age-gate-kicker">☠️ UNGROW AFTER DARK</div>
+        <h2 id="ageGateTitle">ปลดล็อกโหมด 18+</h2>
+        <p>โหมดนี้มีภาษาหยาบคายและคำด่าตรง ๆ ไม่เหมาะกับผู้เยาว์ แต่ยังเป็นมุกต้นไม้ด่าเจ้าของเหมือนเดิม 555</p>
+        <label class="age-confirm-row">
+          <input id="ageGateCheck" type="checkbox" />
+          <span>ฉันอายุ 18 ปีขึ้นไป และยอมรับว่าต้นไม้กำลังจะด่าฉัน</span>
+        </label>
+        <div class="age-gate-actions">
+          <button class="age-cancel" type="button" data-action="age-cancel">ไว้ก่อน 😇</button>
+          <button class="action-btn age-confirm" type="button" data-action="age-confirm" disabled>🔓 ปลดล็อก 18+</button>
+        </div>
+        <small>Ungrow ไม่ขอวันเกิดและไม่เก็บอายุ — การยืนยันนี้อยู่แค่ใน session ปัจจุบัน</small>
+      </div>
+    </dialog>
+
     <div id="exportCanvasParking" hidden>
       <canvas id="exportCanvas" class="export-canvas" width="1080" height="1350" aria-label="Ungrow social card preview"></canvas>
     </div>
   </main>
-  <script src="plant-svg.js?v=shareurl1"></script>
-  <script src="ploy-svg.js?v=shareurl1"></script>
-  <script src="characters.js?v=shareurl1"></script>
-  <script src="app.js?v=shareurl1"></script>
+  <script src="plant-svg.js?v=roastmode1"></script>
+  <script src="ploy-svg.js?v=roastmode1"></script>
+  <script src="roast-modes.js?v=roastmode1"></script>
+  <script src="characters.js?v=roastmode1"></script>
+  <script src="app.js?v=roastmode1"></script>
 </body>
 </html>
