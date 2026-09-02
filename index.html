@@ -16,11 +16,8 @@
 
       <div class="plant" aria-hidden="true">
         <div class="leaves">
-          <span class="leaf l1"></span>
-          <span class="leaf l2"></span>
-          <span class="leaf l3"></span>
-          <span class="leaf l4"></span>
-          <span class="leaf l5"></span>
+          <span class="leaf l1"></span><span class="leaf l2"></span><span class="leaf l3"></span>
+          <span class="leaf l4"></span><span class="leaf l5"></span>
         </div>
         <div class="face"><span class="eye"></span><span class="eye"></span><span class="mouth"></span></div>
         <div class="pot">SOMCHAI<small>NOT IMPRESSED.</small></div>
@@ -32,8 +29,8 @@
           <span class="sub">Snake Plant · Stoic Introvert</span>
         </div>
         <div class="stats">
-          <span>Plant Health <b>89%</b></span>
-          <div class="meter"><i style="width:89%"></i></div>
+          <span>Plant Health <b id="mainHealthValue">89%</b></span>
+          <div class="meter"><i id="mainHealthBar" style="width:89%"></i></div>
           <span>Owner Skill <b>21%</b></span>
           <div class="meter danger"><i style="width:21%"></i></div>
         </div>
@@ -50,12 +47,70 @@
       <section id="sharePanel" class="share-panel" hidden aria-live="polite">
         <div class="share-heading">
           <div>
-            <span class="share-kicker">SOCIAL CARD</span>
-            <h2>พร้อมประจานแล้ว 💀</h2>
+            <span class="share-kicker">SOCIAL CARD LAB</span>
+            <h2>ยิ่ง Health ต่ำ ยิ่งยับ 💀</h2>
           </div>
           <button id="downloadButton" class="download-button" type="button">⬇️ DOWNLOAD PNG</button>
         </div>
-        <canvas id="shareCanvas" width="1080" height="1350" aria-label="Ungrow social card preview"></canvas>
+
+        <div class="damage-control">
+          <div class="damage-label">
+            <span>🧪 Plant Health Damage</span>
+            <strong id="healthReadout">89%</strong>
+          </div>
+          <input id="healthSlider" type="range" min="0" max="100" value="89" aria-label="Plant Health" />
+          <div class="damage-scale"><span>💀 0</span><span>50</span><span>100 🌱</span></div>
+          <p id="damageCaption" class="damage-caption">เริ่มช้ำใจ — มีแผลนิดหน่อย แต่ยังมีแรงด่าเจ้าของ</p>
+        </div>
+
+        <article id="socialCardDom" class="social-card-dom">
+          <div class="social-card-top">
+            <span>🌱💀 UNGROW v0.0.1</span>
+            <span class="social-card-555">555</span>
+          </div>
+          <div class="social-card-title">SOMCHAI</div>
+          <div class="social-card-sub">Snake Plant · Stoic Introvert</div>
+
+          <div class="shame-visual">
+            <div id="shamePlant" class="shame-plant tired" aria-hidden="true">
+              <div class="shame-leaves">
+                <span class="sleaf s1"></span><span class="sleaf s2"></span><span class="sleaf s3"></span>
+                <span class="sleaf s4"></span><span class="sleaf s5"></span>
+              </div>
+              <div class="sface">
+                <span class="seye left"></span><span class="seye right"></span><span class="smouth"></span>
+              </div>
+              <span class="prop bandage">🩹</span>
+              <span class="prop thermometer">🌡️</span>
+              <span class="prop sweat">💧</span>
+              <span class="prop dizzy">💫</span>
+              <span class="prop fly fly1">🪰</span><span class="prop fly fly2">🪰</span>
+              <span class="prop halo">😇</span><span class="prop skull">☠️</span>
+              <span class="prop bruise bruise-left"></span><span class="prop bruise bruise-right"></span>
+              <span class="prop cast"></span><span class="prop sling"></span>
+              <span class="prop pot-crack"></span>
+              <div class="shame-pot">SOMCHAI<small>STILL JUDGING.</small></div>
+            </div>
+            <div class="condition-copy">
+              <strong id="conditionTitle">เริ่มช้ำใจ</strong>
+              <span id="conditionSub">มีแผลนิดหน่อย แต่ยังมีแรงด่าเจ้าของ</span>
+            </div>
+          </div>
+
+          <div class="social-stats">
+            <div class="social-stat-row"><span>Plant Health</span><b id="cardHealthValue">89%</b></div>
+            <div class="social-meter"><i id="cardHealthBar" style="width:89%"></i></div>
+            <div class="social-stat-row"><span>Owner Skill</span><b>21%</b></div>
+            <div class="social-meter danger"><i style="width:21%"></i></div>
+          </div>
+
+          <div id="cardRoast" class="social-roast">“รอดมาได้ไม่ใช่เพราะเจ้าของ แต่เพราะพันธุกรรม”</div>
+          <div class="social-award">🏆 เจ้าของที่ต้นไม้ไม่เคยร้องขอ</div>
+          <div class="social-tags">#Ungrow &nbsp; #PlantRoast &nbsp; #SnakePlant</div>
+          <div class="social-source">Open Source · github.com/kinatoshi99/ungrow</div>
+        </article>
+
+        <canvas id="shareCanvas" width="1080" height="1350" aria-hidden="true"></canvas>
       </section>
 
       <footer>
