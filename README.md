@@ -19,6 +19,7 @@ Ungrow is a deliberately ridiculous open-source experiment starring **SOMCHAI th
 - 🖥️ Dedicated Desktop UI
 - 📸 Independent 1080×1350 Export Card renderer
 - 🗞️ Bold SHAME ME poster: larger character art, health-reactive colors/stamps, and full-size Thai roasts
+- 😂 Famous reaction memes matched automatically to the roast, included in the exported PNG
 - 📤 iOS Share Sheet / PNG download fallback
 - 🩹 Vector health props: bandage, cast, thermometer, bruises, flies, halo
 - 🚫 No AI, no database, no framework
@@ -61,6 +62,8 @@ plant-svg.js        # SOMCHAI SVG renderer + health states
 ploy-svg.js         # PLOY Peace Lily SVG renderer + health states
 app.js              # Character-aware shared state, interactions, PNG/share logic
 social-card.js       # Poster layout, health palette/stamp, and complete Thai text fitting
+memes.js             # Curated text-to-reaction rules and cached same-origin image loading
+assets/memes/        # Five bundled reaction images with source attribution
 speech.js            # Device Thai speech, voice availability, cancellation, and error handling
 ```
 
@@ -105,7 +108,15 @@ Good first contribution ideas:
 
 ## License
 
-MIT
+Original code: MIT. Third-party meme images retain their respective rights; see [image sources](assets/memes/SOURCES.md).
+
+## Memes on SHAME ME cards
+
+Opening SHAME ME pairs the current roast with Success Kid, Futurama Fry, Math Lady, This Is Fine, or Disaster Girl. Phrase matching takes priority over the Health fallback: genuine praise gets Success Kid, guessing/experiments get Math Lady, skeptical side-eye gets Fry, denial gets This Is Fine, and disastrous results get Disaster Girl. For example, “ทำถึงเรื่องพัง” gets Disaster Girl while “ไม่บ้งสักนิด” gets Success Kid.
+
+The mapping is curated and deterministic, not an AI classifier. The same restored roast and Health select the same image, including Daily and legacy links, without extra URL state. Meme names appear on the card and in the accessible preview label. Images are loaded only when exporting and cached for subsequent cards. A failed or timed-out image load offers a retry; a slow older load cannot overwrite a newer PNG.
+
+All five templates are served from the app's own origin so PNG export does not depend on third-party CORS headers. [Source links and image attribution](assets/memes/SOURCES.md) are recorded beside the assets.
 
 ## Daily Disaster Challenge
 

@@ -137,9 +137,42 @@ for (const [viewIndex, view] of ["desktop", "mobile"].entries()) {
       const restored = loadApp(shareUrl.search, view === "mobile");
       assert.deepEqual(restored.state(), app.state());
       assert.equal(restored.run("currentRoast()"), expectedRoast);
+      const reaction = "window.UngrowMemes.select({roast: currentRoast(), health: state.health}).id";
+      assert.equal(restored.run(reaction), app.run(reaction));
     });
   }
 }
+
+test("slow meme loads cannot replace the newer card or its PNG", async () => {
+  const app = loadApp("?c=ploy&h=89&m=2&r=0&e=2");
+  const images = [], rendered = [];
+  app.context.Image = class {
+    constructor() { this.naturalWidth = 500; images.push(this); }
+    set src(value) { this.source = value; if (value.startsWith("blob:")) queueMicrotask(() => this.onload()); }
+  };
+  const canvas = app.run("exportCanvas");
+  canvas.getContext = () => ({});
+  canvas.toBlob = callback => callback(new Blob([rendered.at(-1).meme.id], { type: "image/png" }));
+  app.window.UngrowSocialCard = { render: (_ctx, card) => rendered.push(card) };
+  const oldRender = app.run("renderExportCard()");
+  const oldMeme = images.find(image => image.source.startsWith("assets/"));
+  app.run("setHealth(30)");
+  const newRender = app.run("renderExportCard()");
+  const newMeme = images.find(image => image.source.startsWith("assets/") && image !== oldMeme);
+  assert.ok(newMeme);
+  assert.ok(app.select('[data-action="save-export"]').every(button => button.disabled));
+  newMeme.onload();
+  await newRender;
+  const newestBlob = app.run("latestExportBlob");
+  oldMeme.onload();
+  await oldRender;
+  assert.equal(rendered.length, 1);
+  assert.equal(rendered[0].health, 30);
+  assert.equal(rendered[0].roast, app.run("currentRoast()"));
+  assert.equal(app.run("latestExportBlob"), newestBlob);
+  assert.equal(await newestBlob.text(), rendered[0].meme.id);
+  assert.ok(canvas.attributes["aria-label"].includes(rendered[0].meme.name));
+});
 
 test("archived Daily URLs without c preserve the original result when reshared", () => {
   for (const [date, characterId, health, roastMode] of [

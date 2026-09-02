@@ -118,7 +118,28 @@
     }
   }
 
-  function render(ctx, { character, health, condition, roast, award, daily, plantImage }) {
+  function drawMeme(ctx, meme, image) {
+    const [sx, sy, sw, sh] = meme.crop || [0, 0, image.naturalWidth || image.width, image.naturalHeight || image.height];
+    const scale = Math.min(440 / sw, 326 / sh);
+    const width = sw * scale, height = sh * scale;
+    ctx.save();
+    ctx.translate(784, 565);
+    ctx.rotate(-3 * Math.PI / 180);
+    const left = -width / 2 - 14, top = -height / 2 - 14;
+    // A pasted reaction photo; keep the complete two-panel This Is Fine intact.
+    ctx.fillStyle = INK;
+    ctx.fillRect(left + 9, top + 12, width + 28, height + 92);
+    ctx.fillStyle = PAPER;
+    ctx.fillRect(left, top, width + 28, height + 92);
+    ctx.drawImage(image, sx, sy, sw, sh, -width / 2, -height / 2, width, height);
+    ctx.fillStyle = INK;
+    fitText(ctx, meme.caption, { x: left + 12, y: height / 2 + 8, width: width + 4, height: 39, size: 29, weight: 900, center: true });
+    font(ctx, 17, 700);
+    ctx.fillText(meme.name, -ctx.measureText(meme.name).width / 2, height / 2 + 64);
+    ctx.restore();
+  }
+
+  function render(ctx, { character, health, condition, roast, award, daily, plantImage, meme, memeImage }) {
     const theme = themeFor(health);
     ctx.save();
     ctx.clearRect(0, 0, 1080, 1350);
@@ -144,34 +165,38 @@
     // The existing health-reactive artwork remains the source of truth.
     ctx.fillStyle = PAPER;
     ctx.beginPath();
-    ctx.ellipse(355, 589, 282, 252, -.1, 0, Math.PI * 2);
+    ctx.ellipse(285, 581, 211, 206, -.1, 0, Math.PI * 2);
     ctx.fill();
-    star(ctx, 623, 421, 27, theme.accent);
-    star(ctx, 69, 774, 18, theme.accent);
-    ctx.drawImage(plantImage, 55, 302, 586, 586);
+    star(ctx, 495, 417, 24, theme.accent);
+    star(ctx, 63, 754, 18, theme.accent);
+    ctx.drawImage(plantImage, 27, 315, 500, 500);
     drawStamp(ctx, theme.stamp, theme);
+    drawMeme(ctx, meme, memeImage);
 
     ctx.fillStyle = theme.foreground;
-    font(ctx, 26, 900);
-    ctx.fillText("PLANT HEALTH", 717, 432);
+    ctx.fillRect(60, 830, 960, 2);
+    font(ctx, 22, 900);
+    ctx.fillText("PLANT HEALTH", 60, 865);
     const healthNumber = String(health);
-    font(ctx, health === 100 ? 120 : 154, 900);
+    font(ctx, 76, 900);
     ctx.fillStyle = theme.accent;
-    ctx.fillText(healthNumber, 707, 568);
+    ctx.fillText(healthNumber, 55, 938);
     const numberWidth = ctx.measureText(healthNumber).width;
-    font(ctx, 38, 900);
-    ctx.fillText("%", 715 + numberWidth, 560);
-    meter(ctx, health, 718, 590, 298, theme);
+    font(ctx, 30, 900);
+    ctx.fillText("%", 62 + numberWidth, 934);
+    meter(ctx, health, 261, 898, 95, theme);
 
     ctx.fillStyle = theme.foreground;
-    font(ctx, 24, 700);
-    ctx.fillText("OWNER SKILL", 718, 659);
-    font(ctx, 70, 900);
-    ctx.fillText(`${character.ownerSkill}%`, 712, 739);
-    fitText(ctx, condition.title, { x: 718, y: 775, width: 298, height: 110, size: 30, minSize: 24, weight: 900 });
+    font(ctx, 22, 900);
+    ctx.fillText("OWNER SKILL", 403, 865);
+    font(ctx, 66, 900);
+    ctx.fillText(`${character.ownerSkill}%`, 398, 938);
+    font(ctx, 22, 900);
+    ctx.fillText("สภาพล่าสุด", 699, 865);
+    fitText(ctx, condition.title, { x: 699, y: 874, width: 321, height: 66, size: 28, minSize: 22, weight: 900 });
 
     ctx.fillStyle = theme.foreground;
-    fitText(ctx, condition.sub, { x: 62, y: 894, width: 956, height: 60, size: 24, minSize: 22, center: true });
+    fitText(ctx, condition.sub, { x: 62, y: 950, width: 956, height: 28, size: 21, minSize: 18, center: true });
 
     // One large unbroken quote field replaces the small nested speech card.
     ctx.fillStyle = theme.quoteBackground;

@@ -348,6 +348,8 @@ function canvasBlob(canvas) {
   return new Promise(resolve => canvas.toBlob(resolve, "image/png", 1));
 }
 
+const loadMemeImage = window.UngrowMemes.createImageLoader();
+
 async function renderExportCard() {
   const token = ++exportRenderToken;
   const character = currentCharacter();
@@ -357,23 +359,26 @@ async function renderExportCard() {
     character, health, condition: getCondition(), roast: currentRoast(),
     award: currentAward(), daily: currentDailyChallenge()
   };
+  const meme = window.UngrowMemes.select(card);
   latestExportBlob = null;
   setExportButtons(true, "⏳ กำลังทำการ์ด...");
   setExportStatus("กำลังเตรียมการ์ดประจาน...");
 
   try {
-    const [plantImage] = await Promise.all([
+    const [plantImage, memeImage] = await Promise.all([
       svgToImage(renderer.buildStandalone(health)),
+      loadMemeImage(meme),
       document.fonts?.ready || Promise.resolve()
     ]);
     if (token !== exportRenderToken) return;
-    window.UngrowSocialCard.render(exportCanvas.getContext("2d"), { ...card, plantImage });
+    window.UngrowSocialCard.render(exportCanvas.getContext("2d"), { ...card, plantImage, meme, memeImage });
+    exportCanvas.setAttribute("aria-label", `การ์ด ${character.name} · Health ${health}% · ${card.roast} · มีม ${meme.name}`);
     const blob = await canvasBlob(exportCanvas);
     if (token !== exportRenderToken) return;
     if (!blob) throw new Error("PNG encoding failed");
     latestExportBlob = blob;
     setExportButtons(false, supportsFileShare() ? "📤 SAVE / SHARE PNG" : "⬇️ DOWNLOAD PNG");
-    setExportStatus(`การ์ด ${character.name} พร้อมแล้ว · Health ${health}%`);
+    setExportStatus(`การ์ด ${character.name} พร้อมแล้ว · Health ${health}% · ${meme.name}`);
   } catch (_) {
     if (token !== exportRenderToken) return;
     latestExportBlob = null;

@@ -1,5 +1,18 @@
 # Ungrow handoff — 2026-09-03 (Asia/Bangkok)
 
+## Latest work: text-matched memes on SHAME ME cards
+
+The user asked for famous meme images that fit the roast text. Added five authentic templates: Success Kid, Futurama Fry, Math Lady, This Is Fine, and Disaster Girl. `memes.js` prioritizes punchline phrases (including negation/sarcasm), with the existing Health tone as fallback. No random selection or extra URL state: restored roast + Health reproduce the meme.
+
+- `assets/memes/`: five original downloaded files, about 309 KiB total. `SOURCES.md` records source pages/downloads; these third-party images are excluded from the MIT code license.
+- `social-card.js`: plant and tilted meme photo side by side, compact three-column stats, unchanged full-width complete roast. Both This Is Fine panels remain visible.
+- `app.js`: selected meme loads alongside the SVG before Canvas rendering; same-origin asset cache, 10-second timeout/retry, current snapshot/token protections and descriptive accessible canvas label.
+- `index.html`: new meme module and `meme1` cache keys.
+- Tests: 24 passing, including phrase alignment/negation, 240 current/legacy selections, local assets, cache/error/timeout/retry, Daily URL restoration and an out-of-order image-load export race. Syntax, whitespace, and Impeccable detector checks passed.
+- Local Canvas QA: six SOMCHAI/PLOY cases cover all five memes and light/dark cards; all 240 full roast texts fit without truncation. A spacing correction moved photos clear of the stats divider.
+
+Publication and browser checks are the remaining steps for this feature. Next action: confirm the final local card contact sheet, publish the current changes to existing GitHub `main` without overwriting incoming work, await the Pages deployment, then open SHAME ME on the public site. The repository is `/workspace/scratch/5fafc8f63c3e/ungrow`; public site `https://kinatoshi99.github.io/ungrow/`. Existing iPhone speech/share-sheet limitations below still apply.
+
 ## Latest work: tap-to-read Thai roasts
 
 The user asked for a Siri-like speaker button to read funny roast text. Added `🔊 ฟังต้นไม้เมาท์` next to both desktop and mobile roast boxes. It reads the current visible roast, toggles to stop, and cancels on roast/character/Health/mode/Daily changes, age-gate opening, and page hide. It does not autoplay. SOMCHAI/PLOY have subtle rate/pitch differences.
