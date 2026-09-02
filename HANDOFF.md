@@ -1,6 +1,19 @@
 # Ungrow handoff — 2026-09-03 (Asia/Bangkok)
 
-## Latest work: bolder SHAME ME cards
+## Latest work: tap-to-read Thai roasts
+
+The user asked for a Siri-like speaker button to read funny roast text. Added `🔊 ฟังต้นไม้เมาท์` next to both desktop and mobile roast boxes. It reads the current visible roast, toggles to stop, and cancels on roast/character/Health/mode/Daily changes, age-gate opening, and page hide. It does not autoplay. SOMCHAI/PLOY have subtle rate/pitch differences.
+
+- `speech.js`: Web Speech API controller; prefers an exposed Thai Siri voice, otherwise an available Thai voice. It handles delayed voices, missing Thai voices, unsupported browsers, stale callbacks, errors, and timeouts.
+- `app.js`: current-roast binding and cancellation on context changes.
+- `index.html` / `ui-base.css`: accessible speaker buttons and visible error messages; `speech1` cache keys.
+- `tests/speech.test.cjs` and the app integration checks in `tests/daily-challenge.test.cjs`: 19 total tests pass. Syntax checks and `git diff --check` pass.
+
+Important limit: this uses device/browser TTS, not a direct Siri connection. No new dependency, backend, API key, or microphone access. Actual voice availability and audible playback on iPhone have not been tested; unit tests use a speech-engine double. The default browser does not guarantee access to Siri voices.
+
+Before further edits, fetch current `main`; run `node --test tests/*.test.cjs`. No additional feature work remains for this request.
+
+## Previous work: bolder SHAME ME cards
 
 The user said the social card looked bland. The export card now uses Ungrow's existing forest green, lime, gold, and paper palette as a bold poster: 586 px character art (previously 420), large Plant Health numerals, condition stamps, and a full-width roast panel. Health below 40 switches to the dark poster with gold copy; healthier cards use lime/gold backgrounds. The main app UI and Daily behavior are unchanged.
 

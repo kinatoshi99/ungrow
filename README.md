@@ -14,6 +14,7 @@ Ungrow is a deliberately ridiculous open-source experiment starring **SOMCHAI th
 - 🐍 Health-reactive SOMCHAI SVG character
 - 🤍 Health-reactive PLOY Peace Lily SVG character
 - 🔥 `ROAST ME` with randomized Thai roast lines
+- 🔊 Thai read-aloud: tap the speaker to hear the current roast, tap again to stop
 - 📱 Dedicated Mobile UI
 - 🖥️ Dedicated Desktop UI
 - 📸 Independent 1080×1350 Export Card renderer
@@ -60,6 +61,7 @@ plant-svg.js        # SOMCHAI SVG renderer + health states
 ploy-svg.js         # PLOY Peace Lily SVG renderer + health states
 app.js              # Character-aware shared state, interactions, PNG/share logic
 social-card.js       # Poster layout, health palette/stamp, and complete Thai text fitting
+speech.js            # Device Thai speech, voice availability, cancellation, and error handling
 ```
 
 ## Run locally
@@ -112,3 +114,11 @@ Daily Disaster is deterministic and backend-free. The challenge rolls over at mi
 ## Regression checks
 
 Run `node --test tests/*.test.cjs` with Node.js 22 or newer. No packages are required. The tests load the real page scripts and exercise both sets of UI event handlers, Daily activation for each character, share-link restoration, legacy Daily seeds, and Bangkok date rollover. They use a minimal DOM test double; browser layout and PNG rendering are not covered.
+
+## Read the roast aloud
+
+The `🔊 ฟังต้นไม้เมาท์` button uses the browser's Web Speech API and reads exactly the current roast. Tap again to stop. Changing the roast, character, Health, mode, or Daily challenge stops the previous speech, as does leaving/hiding the page. Nothing plays automatically. SOMCHAI uses a slightly slower/lower delivery and PLOY a slightly quicker/higher one; actual results depend on the voice engine.
+
+This is device/browser speech, not a direct Siri integration. The app selects an available Thai voice and prefers a Thai Siri voice only if the browser exposes one. A missing Thai voice or unsupported browser produces a visible message. No microphone permission, API key, or app-hosted TTS backend is required; the operating system decides how its voice is synthesized. See [MDN: available speech voices](https://developer.mozilla.org/en-US/docs/Web/API/SpeechSynthesis/getVoices).
+
+Speech tests simulate voice loading, start/end/error events, cancellation, and both UI button sets. Actual iPhone voices and audible playback require testing on an iPhone.

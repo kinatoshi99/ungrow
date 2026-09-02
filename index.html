@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
   <meta name="description" content="Ungrow v0.0.1 — SOMCHAI Roast Button. An anti-plant-care open source joke project." />
   <title>Ungrow v0.0.1 — SOMCHAI Roast Button</title>
-  <link rel="stylesheet" href="ui-base.css?v=daily2" />
+  <link rel="stylesheet" href="ui-base.css?v=speech1" />
   <link rel="stylesheet" href="desktop-ui.css?v=daily2" />
   <link rel="stylesheet" href="mobile-ui-v2.css?v=daily2" />
   <link rel="stylesheet" href="export-card.css?v=daily2" />
@@ -37,6 +37,10 @@
             <h1 class="title"><b data-character-name>SOMCHAI</b><span>Roast Button</span></h1>
             <p class="subtitle">Anti-Plant Care Project · Helping plants survive their owners.</p>
             <div class="roast-box" data-roast>“รอดมาได้ไม่ใช่เพราะเจ้าของ แต่เพราะพันธุกรรม”</div>
+            <div class="roast-audio">
+              <button class="speak-btn" type="button" data-action="speak-roast" aria-pressed="false" aria-describedby="desktopSpeechStatus">🔊 ฟังต้นไม้เมาท์</button>
+              <p id="desktopSpeechStatus" class="speech-status" data-speech-status role="status" aria-live="polite"></p>
+            </div>
             <div class="actions">
               <button class="action-btn" type="button" data-action="roast">🔥 ROAST ME</button>
               <button class="action-btn secondary" type="button" data-action="shame">📸 SHAME ME</button>
@@ -115,6 +119,10 @@
 
           <div class="mobile-roast-card">
             <div class="roast-box" data-roast>“รอดมาได้ไม่ใช่เพราะเจ้าของ แต่เพราะพันธุกรรม”</div>
+            <div class="roast-audio">
+              <button class="speak-btn" type="button" data-action="speak-roast" aria-pressed="false" aria-describedby="mobileSpeechStatus">🔊 ฟังต้นไม้เมาท์</button>
+              <p id="mobileSpeechStatus" class="speech-status" data-speech-status role="status" aria-live="polite"></p>
+            </div>
             <button class="action-btn mobile-roast-btn" type="button" data-action="roast">🔥 ROAST อีกที</button>
           </div>
 
@@ -190,6 +198,7 @@
   <script src="daily-challenge.js?v=daily2"></script>
   <script src="characters.js?v=daily2"></script>
   <script src="social-card.js?v=poster1"></script>
-  <script src="app.js?v=poster1"></script>
+  <script src="speech.js?v=speech1"></script>
+  <script src="app.js?v=speech1"></script>
 </body>
 </html>

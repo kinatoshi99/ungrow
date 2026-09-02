@@ -126,6 +126,18 @@ function getCondition(health = state.health) {
 }
 function qsa(selector) { return [...document.querySelectorAll(selector)]; }
 
+const roastSpeech = window.UngrowSpeech.create({
+  onChange({ supported, status, message }) {
+    const active = status === "loading" || status === "speaking";
+    qsa('[data-action="speak-roast"]').forEach(button => {
+      button.disabled = !supported;
+      button.setAttribute("aria-pressed", String(active));
+      button.textContent = active ? "⏹ หยุดเสียง" : "🔊 ฟังต้นไม้เมาท์";
+    });
+    qsa("[data-speech-status]").forEach(element => { element.textContent = message; });
+  }
+});
+
 function buildShareUrl({ preserveOtherParams = false } = {}) {
   const url = new URL(window.location.href);
   if (!preserveOtherParams) url.search = "";
@@ -214,6 +226,7 @@ function adoptHealthAwareEngine(preferredIndex = state.roastIndex) {
 }
 
 function setHealth(value) {
+  roastSpeech.stop();
   clearDailyContext();
   state.health = Math.max(0, Math.min(100, Number(value)));
   adoptHealthAwareEngine();
@@ -224,6 +237,7 @@ function setHealth(value) {
 
 function setCharacter(characterId) {
   if (!characters[characterId] || characterId === state.characterId) return;
+  roastSpeech.stop();
   clearDailyContext();
   state.characterId = characterId;
   adoptHealthAwareEngine();
@@ -234,6 +248,7 @@ function setCharacter(characterId) {
 }
 
 function applyRoastMode(level, preferredIndex = state.roastIndex, { preserveEngine = false, preserveDaily = false } = {}) {
+  roastSpeech.stop();
   if (!preserveDaily) clearDailyContext();
   if (!preserveEngine) state.roastEngine = 2;
   state.roastMode = level;
@@ -256,6 +271,7 @@ function requestRoastMode(level) {
 }
 
 function applyDailyChallenge(key = dailyChallenge.dateKey()) {
+  roastSpeech.stop();
   const daily = dailyChallenge.generate(key, state.characterId);
   state.dailyKey = daily.key;
   state.characterId = daily.characterId;
@@ -270,6 +286,7 @@ function applyDailyChallenge(key = dailyChallenge.dateKey()) {
 }
 
 function nextRoast() {
+  roastSpeech.stop();
   adoptHealthAwareEngine();
   const roasts = currentRoasts();
   let next = state.roastIndex;
@@ -482,6 +499,7 @@ function ageGateElements() {
 }
 
 function showAgeGate() {
+  roastSpeech.stop();
   const { dialog, check, confirm } = ageGateElements();
   if (!dialog) return;
   if (check) check.checked = false;
@@ -523,6 +541,7 @@ qsa("[data-character-id]").forEach(button => button.addEventListener("click", ()
 qsa("[data-roast-mode]").forEach(button => button.addEventListener("click", () => requestRoastMode(Number(button.dataset.roastMode))));
 qsa("[data-health-slider]").forEach(slider => slider.addEventListener("input", e => setHealth(e.target.value)));
 qsa('[data-action="roast"]').forEach(button => button.addEventListener("click", nextRoast));
+qsa('[data-action="speak-roast"]').forEach(button => button.addEventListener("click", () => roastSpeech.toggle(currentRoast(), state.characterId)));
 qsa('[data-action="shame"]').forEach(button => button.addEventListener("click", showExportLab));
 qsa('[data-action="save-export"]').forEach(button => button.addEventListener("click", saveExport));
 qsa('[data-action="share-link"]').forEach(button => button.addEventListener("click", shareStateLink));

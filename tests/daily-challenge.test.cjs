@@ -10,7 +10,7 @@ const plain = value => JSON.parse(JSON.stringify(value));
 
 // Minimal UI test double: load the real markup/scripts and exercise their
 // event handlers. These tests cover state and URLs, not browser layout or PNGs.
-function loadApp(search = "", mobile = false) {
+function loadApp(search = "", mobile = false, speechEnvironment = {}) {
   const elements = [...html.matchAll(/<(\w+)\b([^>]*)>/g)].map(([, tag, source]) => {
     const attributes = Object.fromEntries([...source.matchAll(/([\w-]+)(?:="([^"]*)")?/g)]
       .map(([, key, value]) => [key, value ?? ""]));
@@ -41,7 +41,8 @@ function loadApp(search = "", mobile = false) {
     history: { replaceState(_state, _title, url) { window.location = new URL(url); } },
     matchMedia: () => ({ matches: mobile, addEventListener() {} }),
     sessionStorage: { getItem: key => storage.get(key), setItem: (key, value) => storage.set(key, value) },
-    setTimeout
+    setTimeout,
+    ...speechEnvironment
   };
   class FixedDate extends Date {
     constructor(...args) { super(...(args.length ? args : ["2026-09-02T18:00:00Z"])); }
@@ -174,3 +175,30 @@ test("rerolling a roast keeps PLOY Daily active; manual edits exit it", () => {
     }
   }
 });
+
+for (const [viewIndex, view] of ["desktop", "mobile"].entries()) {
+  test(`${view}: audio reads the current roast and stops on changes`, () => {
+    const spoken = [];
+    let cancellations = 0;
+    const app = loadApp("?c=ploy&h=30&e=2", view === "mobile", {
+      speechSynthesis: {
+        getVoices: () => [{ lang: "th-TH", name: "Thai" }],
+        speak: utterance => spoken.push(utterance),
+        cancel: () => { cancellations++; }
+      },
+      SpeechSynthesisUtterance: function (text) { this.text = text; }
+    });
+    const speaker = app.select('[data-action="speak-roast"]')[viewIndex];
+    for (const action of ["nextRoast()", "setCharacter('somchai')", "setHealth(80)", "requestRoastMode(1)", "applyDailyChallenge()", "showAgeGate()"]) {
+      speaker.fire("click");
+      assert.equal(spoken.at(-1).text, app.run("currentRoast()"));
+      assert.equal(speaker.attributes["aria-pressed"], "true");
+      const before = cancellations;
+      app.run(action);
+      assert.ok(cancellations > before);
+      for (const button of app.select('[data-action="speak-roast"]')) {
+        assert.equal(button.attributes["aria-pressed"], "false");
+      }
+    }
+  });
+}
