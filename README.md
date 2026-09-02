@@ -53,6 +53,7 @@ mobile-ui-v2.css    # Mobile-only composition
 export-card.css     # Export Lab / Canvas preview
 characters.js       # Shared SOMCHAI/PLOY character data
 roast-modes.js       # 50 slang entries, intensity levels, character roast examples
+roast-matrix.js      # Health intent × Roast Mode × character roast matrix
 plant-svg.js        # SOMCHAI SVG renderer + health states
 ploy-svg.js         # PLOY Peace Lily SVG renderer + health states
 app.js              # Character-aware shared state, interactions, PNG/share logic
@@ -72,6 +73,12 @@ Roast intensity is data-driven through `roast-modes.js`. Mode 2 keeps the origin
 
 The slang bank mixes 2026 Thai social-trend terms with a clearly separated evergreen adult-colloquial tier. The 1–4 levels are Ungrow editorial intensity labels, not linguistic or legal classifications.
 
+## Health-aware roast engine
+
+Plant Health now selects roast intent: `praise` (80–100), `sideEye` (60–79), `concerned` (40–59), `hard` (20–39), or `disaster` (0–19). Roast Mode 1–4 changes language intensity only. `roast-matrix.js` contains 3 SOMCHAI and 3 PLOY lines for every intent × mode combination (120 lines total).
+
+New share URLs include `e=2`. Older shared URLs without an engine marker keep the previous flat-pool `r=` semantics, then migrate to the health-aware engine after the user changes Health, character, mode, or asks for another roast. The 18+ session gate remains required for Mode 4.
+
 ## Contribute nonsense
 
 Good first contribution ideas:
@@ -87,7 +94,8 @@ Good first contribution ideas:
 - `v0.0.1` — SOMCHAI Roast Button + health damage + export card ✅
 - `v0.0.2` — Shared character data model + PLOY Peace Lily ✅
 - `v0.0.3` — Roast modes + 50-entry slang bank + 18+ gate + shareable `m=` state ✅
-- `v0.0.4` — Third plant character / easier community contributions
+- `v0.0.4` — Health-aware roast engine (5 intents × 4 modes × 2 characters) ✅
+- `v0.0.5` — Third plant character / easier community contributions
 
 ## License
 

@@ -1,11 +1,12 @@
 const characters = window.UngrowCharacters;
 const roastModes = window.UngrowRoastModes;
+const roastMatrix = window.UngrowRoastMatrix;
 const plantRenderers = {
   somchai: window.UngrowPlantSvg,
   ploy: window.UngrowPloySvg
 };
 
-const DEFAULT_STATE = { characterId: "somchai", health: 89, roastMode: 2 };
+const DEFAULT_STATE = { characterId: "somchai", health: 89, roastMode: 2, roastEngine: 2 };
 let pendingExplicitFromUrl = false;
 let pendingExplicitRoastIndex = 0;
 
@@ -19,9 +20,28 @@ function confirm18Session() {
   catch (_) {}
 }
 
-function roastsForCharacter(character, level) {
+function legacyRoastsForCharacter(character, level) {
   const slangRoasts = roastModes.examplesFor(character.id, level);
   return level === 2 ? [...character.roasts, ...slangRoasts] : slangRoasts;
+}
+
+function getRoastIntent(health = state?.health ?? DEFAULT_STATE.health) {
+  const value = Math.max(0, Math.min(100, Number(health)));
+  if (value >= 80) return "praise";
+  if (value >= 60) return "sideEye";
+  if (value >= 40) return "concerned";
+  if (value >= 20) return "hard";
+  return "disaster";
+}
+
+function healthAwareRoasts(character, level, health) {
+  return roastMatrix.for(character.id, getRoastIntent(health), level);
+}
+
+function roastsForState(character, { level, health, engine }) {
+  return engine === 1
+    ? legacyRoastsForCharacter(character, level)
+    : healthAwareRoasts(character, level, health);
 }
 
 function readStateFromUrl() {
@@ -36,6 +56,9 @@ function readStateFromUrl() {
   const parsedMode = Number.parseInt(params.get("m"), 10);
   const requestedMode = [1, 2, 3, 4].includes(parsedMode) ? parsedMode : DEFAULT_STATE.roastMode;
   const requestedRoast = Number.parseInt(params.get("r"), 10);
+  const parsedEngine = Number.parseInt(params.get("e"), 10);
+  const legacySharedUrl = !params.has("e") && params.has("r");
+  const roastEngine = parsedEngine === 1 ? 1 : parsedEngine === 2 ? 2 : legacySharedUrl ? 1 : DEFAULT_STATE.roastEngine;
   let roastMode = requestedMode;
 
   if (requestedMode === 4 && !has18Confirmation()) {
@@ -44,14 +67,14 @@ function readStateFromUrl() {
     roastMode = DEFAULT_STATE.roastMode;
   }
 
-  const pool = roastsForCharacter(character, roastMode);
-  const defaultRoastIndex = roastMode === DEFAULT_STATE.roastMode
+  const pool = roastsForState(character, { level: roastMode, health, engine: roastEngine });
+  const defaultRoastIndex = roastEngine === 1 && roastMode === DEFAULT_STATE.roastMode
     ? Math.min(character.roasts.length - 1, pool.length - 1)
     : 0;
   const roastIndex = Number.isInteger(requestedRoast) && requestedRoast >= 0 && requestedRoast < pool.length
     ? requestedRoast
     : defaultRoastIndex;
-  return { characterId, health, roastMode, roastIndex };
+  return { characterId, health, roastMode, roastIndex, roastEngine };
 }
 
 const state = readStateFromUrl();
@@ -68,7 +91,13 @@ let exportRenderToken = 0;
 let exportTimer = null;
 
 function currentCharacter() { return characters[state.characterId] || characters.somchai; }
-function currentRoasts() { return roastsForCharacter(currentCharacter(), state.roastMode); }
+function currentRoasts() {
+  return roastsForState(currentCharacter(), {
+    level: state.roastMode,
+    health: state.health,
+    engine: state.roastEngine
+  });
+}
 function currentRoast() {
   const roasts = currentRoasts();
   return roasts[state.roastIndex % roasts.length];
@@ -91,6 +120,7 @@ function buildShareUrl({ preserveOtherParams = false } = {}) {
   url.searchParams.set("h", String(state.health));
   url.searchParams.set("m", String(state.roastMode));
   url.searchParams.set("r", String(state.roastIndex));
+  url.searchParams.set("e", String(state.roastEngine));
   url.hash = "";
   return url.toString();
 }
@@ -135,8 +165,17 @@ function renderUI() {
   if (activeExportLab && !activeExportLab.hidden) scheduleExportRender();
 }
 
+function adoptHealthAwareEngine(preferredIndex = state.roastIndex) {
+  if (state.roastEngine === 2) return;
+  state.roastEngine = 2;
+  const roasts = currentRoasts();
+  state.roastIndex = Math.max(0, Math.min(preferredIndex, roasts.length - 1));
+}
+
 function setHealth(value) {
   state.health = Math.max(0, Math.min(100, Number(value)));
+  adoptHealthAwareEngine();
+  state.roastIndex = Math.min(state.roastIndex, currentRoasts().length - 1);
   syncStateToUrl();
   renderUI();
 }
@@ -144,13 +183,15 @@ function setHealth(value) {
 function setCharacter(characterId) {
   if (!characters[characterId] || characterId === state.characterId) return;
   state.characterId = characterId;
+  adoptHealthAwareEngine();
   state.roastIndex = Math.min(state.roastIndex, currentRoasts().length - 1);
   latestExportBlob = null;
   syncStateToUrl();
   renderUI();
 }
 
-function applyRoastMode(level, preferredIndex = state.roastIndex) {
+function applyRoastMode(level, preferredIndex = state.roastIndex, { preserveEngine = false } = {}) {
+  if (!preserveEngine) state.roastEngine = 2;
   state.roastMode = level;
   const roasts = currentRoasts();
   state.roastIndex = Math.max(0, Math.min(preferredIndex, roasts.length - 1));
@@ -171,6 +212,7 @@ function requestRoastMode(level) {
 }
 
 function nextRoast() {
+  adoptHealthAwareEngine();
   const roasts = currentRoasts();
   let next = state.roastIndex;
   while (next === state.roastIndex && roasts.length > 1) next = Math.floor(Math.random() * roasts.length);
@@ -604,10 +646,11 @@ function confirmAgeGate() {
   const { check } = ageGateElements();
   if (!check?.checked) return;
   confirm18Session();
-  const preferredIndex = pendingExplicitFromUrl ? pendingExplicitRoastIndex : state.roastIndex;
+  const fromSharedUrl = pendingExplicitFromUrl;
+  const preferredIndex = fromSharedUrl ? pendingExplicitRoastIndex : state.roastIndex;
   pendingExplicitFromUrl = false;
   closeAgeGate();
-  applyRoastMode(4, preferredIndex);
+  applyRoastMode(4, preferredIndex, { preserveEngine: fromSharedUrl });
 }
 
 qsa("[data-character-id]").forEach(button => button.addEventListener("click", () => setCharacter(button.dataset.characterId)));
