@@ -48,10 +48,11 @@ function roastsForState(character, { level, health, engine }) {
 function readStateFromUrl() {
   const params = new URLSearchParams(window.location.search);
   const requestedDailyKey = params.get("d");
+  const requestedDailyCharacter = params.get("c");
   const daily = dailyChallenge.validDateKey(requestedDailyKey)
-    ? dailyChallenge.generate(requestedDailyKey)
+    ? dailyChallenge.generate(requestedDailyKey, characters[requestedDailyCharacter] ? requestedDailyCharacter : null)
     : null;
-  const requestedCharacter = daily?.characterId || params.get("c");
+  const requestedCharacter = daily?.characterId || requestedDailyCharacter;
   const characterId = characters[requestedCharacter] ? requestedCharacter : DEFAULT_STATE.characterId;
   const character = characters[characterId];
   const requestedHealth = daily?.health ?? Number.parseInt(params.get("h"), 10);
@@ -99,9 +100,9 @@ let exportTimer = null;
 
 function currentCharacter() { return characters[state.characterId] || characters.somchai; }
 function currentDailyChallenge() {
-  return state.dailyKey ? dailyChallenge.generate(state.dailyKey) : null;
+  return state.dailyKey ? dailyChallenge.generate(state.dailyKey, state.characterId) : null;
 }
-function todayDailyChallenge() { return dailyChallenge.generate(); }
+function todayDailyChallenge() { return dailyChallenge.generate(undefined, state.characterId); }
 function clearDailyContext() { state.dailyKey = null; }
 function currentRoasts() {
   return roastsForState(currentCharacter(), {
@@ -129,7 +130,7 @@ function buildShareUrl({ preserveOtherParams = false } = {}) {
   const url = new URL(window.location.href);
   if (!preserveOtherParams) url.search = "";
   if (state.dailyKey) {
-    url.searchParams.delete("c");
+    url.searchParams.set("c", state.characterId);
     url.searchParams.delete("h");
     url.searchParams.delete("m");
     url.searchParams.set("d", state.dailyKey);
@@ -255,7 +256,7 @@ function requestRoastMode(level) {
 }
 
 function applyDailyChallenge(key = dailyChallenge.dateKey()) {
-  const daily = dailyChallenge.generate(key);
+  const daily = dailyChallenge.generate(key, state.characterId);
   state.dailyKey = daily.key;
   state.characterId = daily.characterId;
   state.health = daily.health;

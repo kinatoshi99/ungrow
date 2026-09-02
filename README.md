@@ -105,4 +105,4 @@ MIT
 
 ## Daily Disaster Challenge
 
-Daily Disaster is deterministic and backend-free. The challenge rolls over at midnight `Asia/Bangkok`; the same date key produces the same character, Health, Roast Mode (1–3), and starting roast for everyone. Daily share URLs use `d=YYYY-MM-DD` plus `r`/`e`, so an older challenge remains reproducible. Manual changes to Health, character, or Roast Mode exit Daily context; requesting another roast stays inside the same Daily challenge.
+Daily Disaster is deterministic and backend-free. The challenge rolls over at midnight `Asia/Bangkok`. Each character now has its own deterministic Daily for the same date, so SOMCHAI and PLOY can both be activated independently. New Daily share URLs include `d=YYYY-MM-DD` + `c` + `r`/`e`; older `d`-only Daily URLs remain backward compatible with the original global challenge. Manual changes to Health, character, or Roast Mode exit Daily context; requesting another roast stays inside the same Daily challenge.

@@ -35,14 +35,19 @@
     return Math.max(1, Math.floor((current - start) / 86400000) + 1);
   }
 
-  function generate(key = dateKey()) {
+  function generate(key = dateKey(), preferredCharacterId = null) {
     const safeKey = validDateKey(key) ? key : dateKey();
     let seed = hash(`ungrow-daily:${safeKey}`);
     const next = max => {
       seed = (Math.imul(seed ^ (seed >>> 15), 2246822519) + 3266489917) >>> 0;
       return seed % max;
     };
-    const characterId = characters[next(characters.length)];
+    const legacyCharacterId = characters[next(characters.length)];
+    const preferredIsValid = characters.includes(preferredCharacterId);
+    const characterId = preferredIsValid ? preferredCharacterId : legacyCharacterId;
+    if (preferredIsValid && characterId !== legacyCharacterId) {
+      seed = hash(`ungrow-daily:${safeKey}:${characterId}`);
+    }
     const band = intentBands[next(intentBands.length)];
     const health = band[0] + next(band[1] - band[0] + 1);
     const roastMode = 1 + next(3); // Daily is frictionless: never auto-select 18+.
