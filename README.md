@@ -7,6 +7,7 @@ Ungrow is a deliberately ridiculous open-source experiment starring **SOMCHAI th
 ## What works
 
 - 🌱 Selectable SOMCHAI + PLOY characters with shared state/rendering
+- 🔗 Shareable character-state URLs (`?c=ploy&h=23&r=4`)
 - 🐍 Health-reactive SOMCHAI SVG character
 - 🤍 Health-reactive PLOY Peace Lily SVG character
 - 🔥 `ROAST ME` with randomized Thai roast lines
@@ -36,6 +37,8 @@ Shared State
 The responsive app does **not** shrink one desktop composition onto mobile. Mobile and desktop use separate markup/layouts while sharing the same character-aware state and rendering path.
 
 The exported Social Card is also separate from both interfaces. Its preview is the same fixed-size Canvas used to create the PNG, so CSS changes to the website cannot distort the exported card.
+
+Character state can also be serialized into a URL using `c` (character), `h` (health), and `r` (roast index). Shared links restore the same character, health, and roast without a database or login.
 
 ## Main files
 

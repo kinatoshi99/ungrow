@@ -25,7 +25,7 @@
   .mobile-owner-skill .meter{margin-bottom:4px}
   .mobile-roast-card{display:grid;gap:10px}
   .mobile-roast-card .roast-box{min-height:116px;padding:22px 18px;font-size:clamp(21px,6vw,27px);border-radius:20px}
-  .mobile-roast-btn,.mobile-shame-btn{width:100%;min-height:52px;font-size:16px}
+  .mobile-roast-btn,.mobile-shame-btn,.mobile-share-btn{width:100%;min-height:52px;font-size:16px}
   .mobile-shame-btn{margin-top:0;background:var(--ink);color:var(--paper)}
   .mobile-export-lab{width:100%;padding:18px 12px calc(22px + env(safe-area-inset-bottom));background:var(--bg);border-top:1px solid var(--line)}
   .mobile-export-lab[hidden]{display:none!important}

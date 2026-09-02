@@ -4,11 +4,25 @@ const plantRenderers = {
   ploy: window.UngrowPloySvg
 };
 
-const state = {
-  characterId: "somchai",
-  health: 89,
-  roastIndex: characters.somchai.roasts.length - 1
-};
+const DEFAULT_STATE = { characterId: "somchai", health: 89 };
+
+function readStateFromUrl() {
+  const params = new URLSearchParams(window.location.search);
+  const requestedCharacter = params.get("c");
+  const characterId = characters[requestedCharacter] ? requestedCharacter : DEFAULT_STATE.characterId;
+  const character = characters[characterId];
+  const requestedHealth = Number.parseInt(params.get("h"), 10);
+  const health = Number.isFinite(requestedHealth)
+    ? Math.max(0, Math.min(100, requestedHealth))
+    : DEFAULT_STATE.health;
+  const requestedRoast = Number.parseInt(params.get("r"), 10);
+  const roastIndex = Number.isInteger(requestedRoast) && requestedRoast >= 0 && requestedRoast < character.roasts.length
+    ? requestedRoast
+    : character.roasts.length - 1;
+  return { characterId, health, roastIndex };
+}
+
+const state = readStateFromUrl();
 const desktopExportLab = document.querySelector("#desktopExportLab");
 const mobileExportLab = document.querySelector("#mobileExportLab");
 const exportCanvas = document.querySelector("#exportCanvas");
@@ -36,6 +50,21 @@ function getCondition(health = state.health) {
   return conditions.find(item => health >= item.min) || conditions[conditions.length - 1];
 }
 function qsa(selector) { return [...document.querySelectorAll(selector)]; }
+
+function buildShareUrl({ preserveOtherParams = false } = {}) {
+  const url = new URL(window.location.href);
+  if (!preserveOtherParams) url.search = "";
+  url.searchParams.set("c", state.characterId);
+  url.searchParams.set("h", String(state.health));
+  url.searchParams.set("r", String(state.roastIndex));
+  url.hash = "";
+  return url.toString();
+}
+
+function syncStateToUrl() {
+  const url = buildShareUrl({ preserveOtherParams: true });
+  window.history.replaceState(null, "", url);
+}
 
 function renderUI() {
   const character = currentCharacter();
@@ -68,6 +97,7 @@ function renderUI() {
 
 function setHealth(value) {
   state.health = Math.max(0, Math.min(100, Number(value)));
+  syncStateToUrl();
   renderUI();
 }
 
@@ -76,6 +106,7 @@ function setCharacter(characterId) {
   state.characterId = characterId;
   state.roastIndex = Math.min(state.roastIndex, currentCharacter().roasts.length - 1);
   latestExportBlob = null;
+  syncStateToUrl();
   renderUI();
 }
 
@@ -84,6 +115,7 @@ function nextRoast() {
   let next = state.roastIndex;
   while (next === state.roastIndex && roasts.length > 1) next = Math.floor(Math.random() * roasts.length);
   state.roastIndex = next;
+  syncStateToUrl();
   renderUI();
 }
 
@@ -423,11 +455,62 @@ async function saveExport() {
   setExportStatus("ส่งไฟล์ให้เบราว์เซอร์ดาวน์โหลดแล้ว");
 }
 
+
+function setShareButtonLabel(label) {
+  qsa('[data-action="share-link"]').forEach(button => {
+    if (!button.dataset.defaultLabel) button.dataset.defaultLabel = button.textContent;
+    button.textContent = label || button.dataset.defaultLabel;
+  });
+}
+
+async function copyShareUrl(url) {
+  if (navigator.clipboard?.writeText) {
+    await navigator.clipboard.writeText(url);
+    return;
+  }
+  const input = document.createElement("textarea");
+  input.value = url;
+  input.setAttribute("readonly", "");
+  input.style.position = "fixed";
+  input.style.opacity = "0";
+  document.body.appendChild(input);
+  input.select();
+  document.execCommand("copy");
+  input.remove();
+}
+
+async function shareStateLink() {
+  syncStateToUrl();
+  const character = currentCharacter();
+  const url = buildShareUrl();
+  const title = `Ungrow — ${character.name}`;
+  const text = `${character.name} · Plant Health ${state.health}% · ${currentRoast()}`;
+
+  if (navigator.share) {
+    try {
+      await navigator.share({ title, text, url });
+      return;
+    } catch (err) {
+      if (err?.name === "AbortError") return;
+    }
+  }
+
+  try {
+    await copyShareUrl(url);
+    setShareButtonLabel("✅ COPIED!");
+    window.setTimeout(() => setShareButtonLabel(), 1400);
+  } catch (_) {
+    setShareButtonLabel("⚠️ COPY FAILED");
+    window.setTimeout(() => setShareButtonLabel(), 1400);
+  }
+}
+
 qsa("[data-character-id]").forEach(button => button.addEventListener("click", () => setCharacter(button.dataset.characterId)));
 qsa("[data-health-slider]").forEach(slider => slider.addEventListener("input", e => setHealth(e.target.value)));
 qsa('[data-action="roast"]').forEach(button => button.addEventListener("click", nextRoast));
 qsa('[data-action="shame"]').forEach(button => button.addEventListener("click", showExportLab));
 qsa('[data-action="save-export"]').forEach(button => button.addEventListener("click", saveExport));
+qsa('[data-action="share-link"]').forEach(button => button.addEventListener("click", shareStateLink));
 qsa('[data-action="close-export"]').forEach(button => button.addEventListener("click", closeExportLab));
 mobileViewport.addEventListener?.("change", () => {
   if (activeExportLab) syncExportContext({ scroll: false });
