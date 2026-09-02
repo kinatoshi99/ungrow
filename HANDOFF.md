@@ -11,9 +11,11 @@ The user asked for famous meme images that fit the roast text. Added five authen
 - Tests: 24 passing, including phrase alignment/negation, 240 current/legacy selections, local assets, cache/error/timeout/retry, Daily URL restoration and an out-of-order image-load export race. Syntax, whitespace, and Impeccable detector checks passed.
 - Local Canvas QA: six SOMCHAI/PLOY cases cover all five memes and light/dark cards; all 240 full roast texts fit without truncation. A spacing correction moved photos clear of the stats divider.
 
-Publication and browser checks are the remaining steps for this feature. Next action: confirm the final local card contact sheet, publish the current changes to existing GitHub `main` without overwriting incoming work, await the Pages deployment, then open SHAME ME on the public site. The repository is `/workspace/scratch/5fafc8f63c3e/ungrow`; public site `https://kinatoshi99.github.io/ungrow/`. Existing iPhone speech/share-sheet limitations below still apply.
+Published implementation commit `b390b2864d220852a7533f6d6543fdd5010c8bde`; GitHub Pages run `33673926855` completed successfully. Final six-card contact sheet confirmed that reaction frames clear the stats divider. Public-browser SHAME ME verification generated PLOY's Health 50% card with “จริงหรือเค้กคะที่บอกว่าดิฉันยังโอเค”, selected This Is Fine, set the descriptive canvas label, and enabled DOWNLOAD PNG after encoding. Actual downloaded-file receipt and native iPhone share sheets were not verified. No implementation work remains.
 
-## Latest work: tap-to-read Thai roasts
+Before new work, fetch `main` and run `node --test tests/*.test.cjs`. The repository is `/workspace/scratch/5fafc8f63c3e/ungrow`; public site `https://kinatoshi99.github.io/ungrow/`. Existing iPhone speech limitations below still apply.
+
+## Previous work: tap-to-read Thai roasts
 
 The user asked for a Siri-like speaker button to read funny roast text. Added `🔊 ฟังต้นไม้เมาท์` next to both desktop and mobile roast boxes. It reads the current visible roast, toggles to stop, and cancels on roast/character/Health/mode/Daily changes, age-gate opening, and page hide. It does not autoplay. SOMCHAI/PLOY have subtle rate/pitch differences.
 
