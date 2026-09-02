@@ -194,17 +194,22 @@ async function renderExportCard() {
   ctx.font = '700 28px system-ui,-apple-system,"Segoe UI",sans-serif';
   ctx.fillText("Snake Plant · Stoic Introvert", 108, 263);
 
-  await drawSvgPlant(ctx, 330, 286, 420, 420, health);
+  const plantX = 330;
+  const plantY = 286;
+  const plantSize = 420;
+  const plantCenterX = plantX + plantSize / 2;
+  await drawSvgPlant(ctx, plantX, plantY, plantSize, plantSize, health);
   if (token !== exportRenderToken) return;
 
+  // Keep the condition visually locked to SOMCHAI's artwork center.
   ctx.textAlign = "center";
   ctx.fillStyle = condition.color;
   ctx.font = '950 36px system-ui,-apple-system,"Segoe UI",sans-serif';
-  ctx.fillText(condition.title, 540, 742);
+  ctx.fillText(condition.title, plantCenterX, 724);
   ctx.fillStyle = "#64806e";
   ctx.font = '700 22px system-ui,-apple-system,"Segoe UI",sans-serif';
   const conditionLines = wrapLines(ctx, condition.sub, 760).slice(0, 2);
-  conditionLines.forEach((line, i) => ctx.fillText(line, 540, 782 + i * 30));
+  conditionLines.forEach((line, i) => ctx.fillText(line, plantCenterX, 762 + i * 30));
 
   roundRect(ctx, 104, 835, 872, 148, 28, "#f4efe4", "#d7cfbf", 3);
   ctx.textAlign = "left";
@@ -239,7 +244,6 @@ async function renderExportCard() {
   ctx.fillStyle = "#718174";
   ctx.font = '700 18px system-ui,-apple-system,"Segoe UI",sans-serif';
   ctx.fillText("#Ungrow   #PlantRoast   #SnakePlant", 104, 1282);
-  ctx.fillText("github.com/kinatoshi99/ungrow", 104, 1312);
 
   const blob = await canvasBlob(exportCanvas);
   if (token !== exportRenderToken || !blob) return;
