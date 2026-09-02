@@ -41,8 +41,22 @@
 
       <blockquote id="roast" aria-live="polite">“รอดมาได้ไม่ใช่เพราะเจ้าของ<br>แต่เพราะพันธุกรรม”</blockquote>
 
-      <button id="roastButton" type="button">🔥 ROAST ME</button>
-      <p class="hint">กดอีกที เผื่อ SOMCHAI ยังด่าไม่สะใจ</p>
+      <div class="actions">
+        <button id="roastButton" type="button">🔥 ROAST ME</button>
+        <button id="shameButton" class="shame-button" type="button">📸 SHAME ME</button>
+      </div>
+      <p class="hint">ROAST ให้สะใจก่อน แล้วกด SHAME ME เอาไปประจานตัวเอง 😂</p>
+
+      <section id="sharePanel" class="share-panel" hidden aria-live="polite">
+        <div class="share-heading">
+          <div>
+            <span class="share-kicker">SOCIAL CARD</span>
+            <h2>พร้อมประจานแล้ว 💀</h2>
+          </div>
+          <button id="downloadButton" class="download-button" type="button">⬇️ DOWNLOAD PNG</button>
+        </div>
+        <canvas id="shareCanvas" width="1080" height="1350" aria-label="Ungrow social card preview"></canvas>
+      </section>
 
       <footer>
         <span>Open Source · No AI · No DB · Just nonsense.</span>

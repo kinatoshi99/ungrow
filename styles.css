@@ -103,6 +103,11 @@ blockquote {
   font-weight: 900;
   letter-spacing: -.02em;
 }
+.actions {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+}
 button {
   appearance: none;
   width: 100%;
@@ -120,6 +125,14 @@ button {
 }
 button:hover { transform: translateY(-2px); box-shadow: 0 8px 0 var(--ink); }
 button:active { transform: translateY(5px); box-shadow: 0 1px 0 var(--ink); }
+.shame-button { background: var(--ink); color: var(--paper); box-shadow: 0 6px 0 #0b2117; }
+.shame-button:hover { box-shadow: 0 8px 0 #0b2117; }
+.share-panel { margin-top: 28px; padding-top: 24px; border-top: 2px dashed var(--line); }
+.share-heading { display: flex; align-items: end; justify-content: space-between; gap: 14px; margin-bottom: 14px; }
+.share-kicker { display: block; font-size: 10px; font-weight: 950; letter-spacing: .16em; color: var(--green); }
+.share-heading h2 { margin: 4px 0 0; font-size: 22px; }
+.download-button { width: auto; padding: 11px 14px; font-size: 12px; border-width: 2px; border-radius: 12px; box-shadow: 0 4px 0 var(--ink); background: var(--lime); }
+#shareCanvas { display: block; width: 100%; height: auto; border: 2px solid var(--ink); border-radius: 20px; background: #efe9dc; }
 .hint { text-align: center; font-size: 12px; color: #718174; }
 footer { margin-top: 26px; padding-top: 16px; border-top: 1px solid var(--line); display: flex; justify-content: space-between; gap: 12px; font-size: 11px; color: #718174; }
 footer a { color: var(--ink); font-weight: 900; }
@@ -129,6 +142,9 @@ footer a { color: var(--ink); font-weight: 900; }
   .card { border-radius: 22px; box-shadow: 7px 7px 0 var(--ink); padding: 22px; }
   .profile { grid-template-columns: 1fr; gap: 12px; }
   .plant { transform: scale(.9); margin-top: -8px; margin-bottom: -10px; }
+  .actions { grid-template-columns: 1fr; }
+  .share-heading { align-items: stretch; flex-direction: column; }
+  .download-button { width: 100%; }
   footer { flex-direction: column; }
 }
 
