@@ -17,6 +17,7 @@ Ungrow is a deliberately ridiculous open-source experiment starring **SOMCHAI th
 - 📱 Dedicated Mobile UI
 - 🖥️ Dedicated Desktop UI
 - 📸 Independent 1080×1350 Export Card renderer
+- 🗞️ Bold SHAME ME poster: larger character art, health-reactive colors/stamps, and full-size Thai roasts
 - 📤 iOS Share Sheet / PNG download fallback
 - 🩹 Vector health props: bandage, cast, thermometer, bruises, flies, halo
 - 🚫 No AI, no database, no framework
@@ -58,6 +59,7 @@ daily-challenge.js   # Deterministic Daily Disaster generator (Asia/Bangkok day)
 plant-svg.js        # SOMCHAI SVG renderer + health states
 ploy-svg.js         # PLOY Peace Lily SVG renderer + health states
 app.js              # Character-aware shared state, interactions, PNG/share logic
+social-card.js       # Poster layout, health palette/stamp, and complete Thai text fitting
 ```
 
 ## Run locally

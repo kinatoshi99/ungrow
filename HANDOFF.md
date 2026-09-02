@@ -1,6 +1,19 @@
 # Ungrow handoff — 2026-09-03 (Asia/Bangkok)
 
-## Objective and result
+## Latest work: bolder SHAME ME cards
+
+The user said the social card looked bland. The export card now uses Ungrow's existing forest green, lime, gold, and paper palette as a bold poster: 586 px character art (previously 420), large Plant Health numerals, condition stamps, and a full-width roast panel. Health below 40 switches to the dark poster with gold copy; healthier cards use lime/gold backgrounds. The main app UI and Daily behavior are unchanged.
+
+- `social-card.js` owns the pure 1080×1350 Canvas poster renderer and Thai text fitting.
+- `app.js` loads the plant image and waits for fonts before drawing a state snapshot. Old PNGs are invalidated immediately when an active card changes, and failures offer a retry.
+- `index.html` loads the new renderer before `app.js`, with `poster1` cache keys.
+- The existing SVG characters, health props, roasts, awards, Daily badge, and PNG/share flow are preserved. No fonts, image assets, frameworks, or runtime dependencies were added.
+
+Validation: six representative SOMCHAI/PLOY posters inspected at 100/89/65/30/6/0 Health; all 240 current and legacy roast texts fit without dropped text using a local Canvas runtime and Thai fonts; `node --test tests/*.test.cjs` passed all 10 cases. Syntax checks and `git diff --check` passed. Impeccable's mechanical detector reported no findings. The local cloud-browser URL was blocked by the client, so local browser/device QA was unavailable. Native iOS Share Sheet has not been tested.
+
+No optional polish or third-character work is pending for this request. Before new edits, fetch `main` and confirm the current state. Relevant next command: `node --test tests/*.test.cjs`.
+
+## Previous work: Daily activation
 
 The latest user report was that PLOY could not activate Daily Disaster while SOMCHAI could. Daily must stay on the selected character, show ACTIVE, and restore that character from a shared URL.
 

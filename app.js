@@ -316,141 +316,6 @@ function setExportStatus(message) {
   qsa("[data-export-status]").forEach(el => { el.textContent = message; });
 }
 
-function roundRect(ctx, x, y, w, h, r, fill, stroke, lineWidth = 1) {
-  const rr = Math.min(r, w / 2, h / 2);
-  ctx.beginPath();
-  ctx.moveTo(x + rr, y);
-  ctx.arcTo(x + w, y, x + w, y + h, rr);
-  ctx.arcTo(x + w, y + h, x, y + h, rr);
-  ctx.arcTo(x, y + h, x, y, rr);
-  ctx.arcTo(x, y, x + w, y, rr);
-  ctx.closePath();
-  if (fill) { ctx.fillStyle = fill; ctx.fill(); }
-  if (stroke) { ctx.lineWidth = lineWidth; ctx.strokeStyle = stroke; ctx.stroke(); }
-}
-
-function textSegments(text) {
-  if (typeof Intl !== "undefined" && Intl.Segmenter) {
-    return [...new Intl.Segmenter("th", { granularity: "word" }).segment(text)].map(x => x.segment);
-  }
-  return text.split(/(\s+)/).filter(Boolean);
-}
-
-function graphemeSegments(text) {
-  if (typeof Intl !== "undefined" && Intl.Segmenter) {
-    return [...new Intl.Segmenter("th", { granularity: "grapheme" }).segment(text)].map(x => x.segment);
-  }
-  return Array.from(text);
-}
-
-function wrapLines(ctx, text, maxWidth) {
-  const parts = textSegments(text);
-  const lines = [];
-  let line = "";
-
-  const pushLine = value => {
-    const clean = value.trim();
-    if (clean) lines.push(clean);
-  };
-
-  for (const rawPart of parts) {
-    let part = rawPart;
-
-    // Thai/URL-like segments can occasionally be wider than the safe width.
-    // Break those segments by grapheme so no rendered line can overflow.
-    if (ctx.measureText(part).width > maxWidth) {
-      pushLine(line);
-      line = "";
-      let chunk = "";
-      for (const grapheme of graphemeSegments(part)) {
-        const test = chunk + grapheme;
-        if (chunk && ctx.measureText(test).width > maxWidth) {
-          pushLine(chunk);
-          chunk = grapheme;
-        } else {
-          chunk = test;
-        }
-      }
-      line = chunk;
-      continue;
-    }
-
-    const test = line + part;
-    if (line && ctx.measureText(test).width > maxWidth) {
-      pushLine(line);
-      line = part.trimStart();
-    } else {
-      line = test;
-    }
-  }
-
-  pushLine(line);
-  return lines;
-}
-
-function drawCenteredLines(ctx, text, { centerX, firstBaselineY, maxWidth, lineHeight, maxLines }) {
-  const lines = wrapLines(ctx, text, maxWidth);
-  const visible = lines.slice(0, maxLines);
-
-  // Do not rely on Canvas textAlign="center" for production Thai text.
-  // iOS Safari can place the center anchor like a start/left origin in this flow.
-  // Measure each rendered line and position its left edge explicitly instead.
-  ctx.save();
-  ctx.textAlign = "left";
-  ctx.direction = "ltr";
-  visible.forEach((line, index) => {
-    const width = ctx.measureText(line).width;
-    const x = centerX - width / 2;
-    ctx.fillText(line, x, firstBaselineY + index * lineHeight);
-  });
-  ctx.restore();
-  return visible;
-}
-
-function textVerticalMetrics(ctx, text, fallbackSize) {
-  const metrics = ctx.measureText(text || "Mgก");
-  return {
-    ascent: metrics.actualBoundingBoxAscent || fallbackSize * 0.8,
-    descent: metrics.actualBoundingBoxDescent || fallbackSize * 0.2
-  };
-}
-
-function drawConditionBlock(ctx, condition, { centerX, plantBottomY, statsTopY }) {
-  const regionTop = plantBottomY + 14;
-  const regionBottom = statsTopY - 16;
-  const titleToSubtitleGap = 10;
-  const subtitleLineHeight = 30;
-
-  ctx.font = '950 36px system-ui,-apple-system,"Segoe UI",sans-serif';
-  const titleLines = wrapLines(ctx, condition.title, 700).slice(0, 1);
-  const titleMetrics = textVerticalMetrics(ctx, titleLines[0], 36);
-
-  ctx.font = '700 22px system-ui,-apple-system,"Segoe UI",sans-serif';
-  const subtitleLines = wrapLines(ctx, condition.sub, 660).slice(0, 2);
-  const subtitleMetrics = textVerticalMetrics(ctx, subtitleLines[0], 22);
-  const subtitleHeight = subtitleMetrics.ascent + subtitleMetrics.descent
-    + Math.max(0, subtitleLines.length - 1) * subtitleLineHeight;
-  const blockHeight = titleMetrics.ascent + titleMetrics.descent
-    + titleToSubtitleGap + subtitleHeight;
-  const availableHeight = Math.max(0, regionBottom - regionTop);
-  const blockTop = regionTop + Math.max(0, (availableHeight - blockHeight) / 2);
-  const titleBaselineY = blockTop + titleMetrics.ascent;
-  const subtitleBaselineY = titleBaselineY + titleMetrics.descent
-    + titleToSubtitleGap + subtitleMetrics.ascent;
-
-  ctx.fillStyle = condition.color;
-  ctx.font = '950 36px system-ui,-apple-system,"Segoe UI",sans-serif';
-  drawCenteredLines(ctx, condition.title, {
-    centerX, firstBaselineY: titleBaselineY, maxWidth: 700, lineHeight: 42, maxLines: 1
-  });
-
-  ctx.fillStyle = "#64806e";
-  ctx.font = '700 22px system-ui,-apple-system,"Segoe UI",sans-serif';
-  drawCenteredLines(ctx, condition.sub, {
-    centerX, firstBaselineY: subtitleBaselineY, maxWidth: 660, lineHeight: subtitleLineHeight, maxLines: 2
-  });
-}
-
 function svgToImage(markup) {
   return new Promise((resolve, reject) => {
     const blob = new Blob([markup], { type: "image/svg+xml;charset=utf-8" });
@@ -462,122 +327,51 @@ function svgToImage(markup) {
   });
 }
 
-async function drawSvgPlant(ctx, x, y, width, height, health, renderer = currentPlantRenderer()) {
-  const image = await svgToImage(renderer.buildStandalone(health));
-  ctx.drawImage(image, x, y, width, height);
-}
-
 function canvasBlob(canvas) {
   return new Promise(resolve => canvas.toBlob(resolve, "image/png", 1));
 }
 
 async function renderExportCard() {
   const token = ++exportRenderToken;
-  const ctx = exportCanvas.getContext("2d");
-  const W = 1080, H = 1350;
   const character = currentCharacter();
   const renderer = currentPlantRenderer();
-  const condition = getCondition();
   const health = state.health;
-  const roast = currentRoast();
+  const card = {
+    character, health, condition: getCondition(), roast: currentRoast(),
+    award: currentAward(), daily: currentDailyChallenge()
+  };
+  latestExportBlob = null;
+  setExportButtons(true, "⏳ กำลังทำการ์ด...");
+  setExportStatus("กำลังเตรียมการ์ดประจาน...");
 
-  setExportButtons(true, "⏳ PREPARING PNG...");
-  setExportStatus("กำลัง render Social Card 1080×1350…");
-
-  ctx.clearRect(0, 0, W, H);
-  ctx.fillStyle = "#efe9dc";
-  ctx.fillRect(0, 0, W, H);
-  roundRect(ctx, 54, 54, 972, 1242, 48, "#fffaf0", "#173b2a", 7);
-
-  ctx.textBaseline = "alphabetic";
-  ctx.textAlign = "left";
-  ctx.fillStyle = "#2f6b45";
-  ctx.font = '900 30px system-ui,-apple-system,"Segoe UI",sans-serif';
-  ctx.fillText("🌱💀 UNGROW v0.0.1", 104, 122);
-  ctx.textAlign = "right";
-  ctx.fillStyle = "rgba(23,59,42,.09)";
-  ctx.font = '950 72px system-ui,-apple-system,sans-serif';
-  ctx.fillText("555", 966, 128);
-  const daily = currentDailyChallenge();
-  if (daily) {
-    ctx.fillStyle = "#c84b31";
-    ctx.font = '900 22px system-ui,-apple-system,"Segoe UI",sans-serif';
-    ctx.fillText(`🔥 DAILY #${String(daily.number).padStart(3, "0")}`, 966, 174);
+  try {
+    const [plantImage] = await Promise.all([
+      svgToImage(renderer.buildStandalone(health)),
+      document.fonts?.ready || Promise.resolve()
+    ]);
+    if (token !== exportRenderToken) return;
+    window.UngrowSocialCard.render(exportCanvas.getContext("2d"), { ...card, plantImage });
+    const blob = await canvasBlob(exportCanvas);
+    if (token !== exportRenderToken) return;
+    if (!blob) throw new Error("PNG encoding failed");
+    latestExportBlob = blob;
+    setExportButtons(false, supportsFileShare() ? "📤 SAVE / SHARE PNG" : "⬇️ DOWNLOAD PNG");
+    setExportStatus(`การ์ด ${character.name} พร้อมแล้ว · Health ${health}%`);
+  } catch (_) {
+    if (token !== exportRenderToken) return;
+    latestExportBlob = null;
+    setExportButtons(false, "↻ ลองทำการ์ดอีกครั้ง");
+    setExportStatus("สร้างการ์ดไม่สำเร็จ กดปุ่มเพื่อลองอีกครั้ง");
   }
-
-  ctx.textAlign = "left";
-  ctx.fillStyle = "#173b2a";
-  ctx.font = '950 78px system-ui,-apple-system,"Segoe UI",sans-serif';
-  ctx.fillText(character.name, 104, 218);
-  ctx.fillStyle = "#64806e";
-  ctx.font = '700 28px system-ui,-apple-system,"Segoe UI",sans-serif';
-  ctx.fillText(character.subtitle, 108, 263);
-
-  const cardCenterX = W / 2;
-  const { plantX, plantY, plantSize } = character.exportLayout;
-  const plantBottomY = plantY + plantSize;
-  const statsBoxY = 835;
-  await drawSvgPlant(ctx, plantX, plantY, plantSize, plantSize, health, renderer);
-  if (token !== exportRenderToken) return;
-
-  // Keep condition copy in the safe vertical region between the artwork and stats.
-  drawConditionBlock(ctx, condition, {
-    centerX: cardCenterX, plantBottomY, statsTopY: statsBoxY
-  });
-
-  roundRect(ctx, 104, statsBoxY, 872, 148, 28, "#f4efe4", "#d7cfbf", 3);
-  ctx.textAlign = "left";
-  ctx.fillStyle = "#173b2a";
-  ctx.font = '850 26px system-ui,-apple-system,"Segoe UI",sans-serif';
-  ctx.fillText("Plant Health", 144, 881);
-  ctx.textAlign = "right";
-  ctx.fillText(`${health}%`, 930, 881);
-  ctx.textAlign = "left";
-  roundRect(ctx, 144, 898, 786, 14, 7, "#ded7c9");
-  if (health > 0) roundRect(ctx, 144, 898, 786 * health / 100, 14, 7, condition.color);
-  ctx.fillText("Owner Skill", 144, 946);
-  ctx.textAlign = "right";
-  ctx.fillText(`${character.ownerSkill}%`, 930, 946);
-  ctx.textAlign = "left";
-  roundRect(ctx, 144, 960, 786, 14, 7, "#ded7c9");
-  roundRect(ctx, 144, 960, 786 * character.ownerSkill / 100, 14, 7, "#c84b31");
-
-  const roastBoxX = 104;
-  const roastBoxY = 1018;
-  const roastBoxW = 872;
-  const roastBoxH = 190;
-  const roastCenterX = roastBoxX + roastBoxW / 2;
-  roundRect(ctx, roastBoxX, roastBoxY, roastBoxW, roastBoxH, 32, "#173b2a");
-  ctx.fillStyle = "#fffaf0";
-  ctx.font = '950 42px system-ui,-apple-system,"Segoe UI",sans-serif';
-  const roastLines = wrapLines(ctx, `“${roast}”`, 700).slice(0, 3);
-  const roastLineHeight = 55;
-  const roastFirstBaseline = 1117 - ((roastLines.length - 1) * roastLineHeight / 2);
-  drawCenteredLines(ctx, `“${roast}”`, {
-    centerX: roastCenterX,
-    firstBaselineY: roastFirstBaseline,
-    maxWidth: 700,
-    lineHeight: roastLineHeight,
-    maxLines: 3
-  });
-
-  ctx.textAlign = "left";
-  ctx.fillStyle = "#2f6b45";
-  ctx.font = '900 25px system-ui,-apple-system,"Segoe UI",sans-serif';
-  ctx.fillText(`🏆 ${currentAward()}`, 104, 1250);
-  ctx.fillStyle = "#718174";
-  ctx.font = '700 18px system-ui,-apple-system,"Segoe UI",sans-serif';
-  ctx.fillText(character.hashtags.join("   "), 104, 1282);
-
-  const blob = await canvasBlob(exportCanvas);
-  if (token !== exportRenderToken || !blob) return;
-  latestExportBlob = blob;
-  setExportButtons(false, supportsFileShare() ? "📤 SAVE / SHARE PNG" : "⬇️ DOWNLOAD PNG");
-  setExportStatus(`พร้อมแล้ว · PNG 1080×1350 · Health ${health}%`);
 }
 
 function scheduleExportRender(immediate = false) {
   clearTimeout(exportTimer);
+  // Invalidate the previous PNG as soon as Health/character changes, including
+  // during the debounce, so a saved card cannot carry stale artwork or text.
+  exportRenderToken += 1;
+  latestExportBlob = null;
+  setExportButtons(true, "⏳ กำลังทำการ์ด...");
   if (immediate) renderExportCard();
   else exportTimer = setTimeout(renderExportCard, 80);
 }
