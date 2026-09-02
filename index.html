@@ -6,6 +6,7 @@
   <meta name="description" content="Ungrow v0.0.1 — SOMCHAI Roast Button. An anti-plant-care open source joke project." />
   <title>Ungrow v0.0.1 — SOMCHAI Roast Button</title>
   <link rel="stylesheet" href="styles.css" />
+  <link rel="stylesheet" href="svg-plant.css" />
   <link rel="stylesheet" href="mobile.css" />
 </head>
 <body>
@@ -73,25 +74,7 @@
           <div class="social-card-sub">Snake Plant · Stoic Introvert</div>
 
           <div class="shame-visual">
-            <div id="shamePlant" class="shame-plant tired" aria-hidden="true">
-              <div class="shame-leaves">
-                <span class="sleaf s1"></span><span class="sleaf s2"></span><span class="sleaf s3"></span>
-                <span class="sleaf s4"></span><span class="sleaf s5"></span>
-              </div>
-              <div class="sface">
-                <span class="seye left"></span><span class="seye right"></span><span class="smouth"></span>
-              </div>
-              <span class="prop bandage">🩹</span>
-              <span class="prop thermometer">🌡️</span>
-              <span class="prop sweat">💧</span>
-              <span class="prop dizzy">💫</span>
-              <span class="prop fly fly1">🪰</span><span class="prop fly fly2">🪰</span>
-              <span class="prop halo">😇</span><span class="prop skull">☠️</span>
-              <span class="prop bruise bruise-left"></span><span class="prop bruise bruise-right"></span>
-              <span class="prop cast"></span><span class="prop sling"></span>
-              <span class="prop pot-crack"></span>
-              <div class="shame-pot">SOMCHAI<small>STILL JUDGING.</small></div>
-            </div>
+            <svg id="shameSvg" class="shame-svg" viewBox="0 0 320 320" role="img" aria-label="SOMCHAI plant health illustration"></svg>
             <div class="condition-copy">
               <strong id="conditionTitle">เริ่มช้ำใจ</strong>
               <span id="conditionSub">มีแผลนิดหน่อย แต่ยังมีแรงด่าเจ้าของ</span>
@@ -120,6 +103,7 @@
       </footer>
     </section>
   </main>
+  <script src="plant-svg.js"></script>
   <script src="app.js"></script>
 </body>
 </html>
