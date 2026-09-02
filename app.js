@@ -123,21 +123,67 @@ function textSegments(text) {
   return text.split(/(\s+)/).filter(Boolean);
 }
 
+function graphemeSegments(text) {
+  if (typeof Intl !== "undefined" && Intl.Segmenter) {
+    return [...new Intl.Segmenter("th", { granularity: "grapheme" }).segment(text)].map(x => x.segment);
+  }
+  return Array.from(text);
+}
+
 function wrapLines(ctx, text, maxWidth) {
   const parts = textSegments(text);
   const lines = [];
   let line = "";
-  for (const part of parts) {
+
+  const pushLine = value => {
+    const clean = value.trim();
+    if (clean) lines.push(clean);
+  };
+
+  for (const rawPart of parts) {
+    let part = rawPart;
+
+    // Thai/URL-like segments can occasionally be wider than the safe width.
+    // Break those segments by grapheme so no rendered line can overflow.
+    if (ctx.measureText(part).width > maxWidth) {
+      pushLine(line);
+      line = "";
+      let chunk = "";
+      for (const grapheme of graphemeSegments(part)) {
+        const test = chunk + grapheme;
+        if (chunk && ctx.measureText(test).width > maxWidth) {
+          pushLine(chunk);
+          chunk = grapheme;
+        } else {
+          chunk = test;
+        }
+      }
+      line = chunk;
+      continue;
+    }
+
     const test = line + part;
     if (line && ctx.measureText(test).width > maxWidth) {
-      lines.push(line.trim());
+      pushLine(line);
       line = part.trimStart();
     } else {
       line = test;
     }
   }
-  if (line.trim()) lines.push(line.trim());
+
+  pushLine(line);
   return lines;
+}
+
+function drawCenteredLines(ctx, text, { centerX, firstBaselineY, maxWidth, lineHeight, maxLines }) {
+  const lines = wrapLines(ctx, text, maxWidth);
+  const visible = lines.slice(0, maxLines);
+  ctx.textAlign = "center";
+  ctx.direction = "ltr";
+  visible.forEach((line, index) => {
+    ctx.fillText(line, centerX, firstBaselineY + index * lineHeight);
+  });
+  return visible;
 }
 
 function svgToImage(markup) {
@@ -194,22 +240,24 @@ async function renderExportCard() {
   ctx.font = '700 28px system-ui,-apple-system,"Segoe UI",sans-serif';
   ctx.fillText("Snake Plant · Stoic Introvert", 108, 263);
 
+  const cardCenterX = W / 2;
   const plantX = 330;
   const plantY = 286;
   const plantSize = 420;
-  const plantCenterX = plantX + plantSize / 2;
   await drawSvgPlant(ctx, plantX, plantY, plantSize, plantSize, health);
   if (token !== exportRenderToken) return;
 
-  // Keep the condition visually locked to SOMCHAI's artwork center.
-  ctx.textAlign = "center";
+  // Production canvas typography uses the card center as the single horizontal anchor.
   ctx.fillStyle = condition.color;
   ctx.font = '950 36px system-ui,-apple-system,"Segoe UI",sans-serif';
-  ctx.fillText(condition.title, plantCenterX, 724);
+  drawCenteredLines(ctx, condition.title, {
+    centerX: cardCenterX, firstBaselineY: 724, maxWidth: 700, lineHeight: 42, maxLines: 1
+  });
   ctx.fillStyle = "#64806e";
   ctx.font = '700 22px system-ui,-apple-system,"Segoe UI",sans-serif';
-  const conditionLines = wrapLines(ctx, condition.sub, 760).slice(0, 2);
-  conditionLines.forEach((line, i) => ctx.fillText(line, plantCenterX, 762 + i * 30));
+  drawCenteredLines(ctx, condition.sub, {
+    centerX: cardCenterX, firstBaselineY: 762, maxWidth: 660, lineHeight: 30, maxLines: 2
+  });
 
   roundRect(ctx, 104, 835, 872, 148, 28, "#f4efe4", "#d7cfbf", 3);
   ctx.textAlign = "left";
@@ -228,14 +276,24 @@ async function renderExportCard() {
   roundRect(ctx, 144, 960, 786, 14, 7, "#ded7c9");
   roundRect(ctx, 144, 960, 165, 14, 7, "#c84b31");
 
-  roundRect(ctx, 104, 1018, 872, 190, 32, "#173b2a");
+  const roastBoxX = 104;
+  const roastBoxY = 1018;
+  const roastBoxW = 872;
+  const roastBoxH = 190;
+  const roastCenterX = roastBoxX + roastBoxW / 2;
+  roundRect(ctx, roastBoxX, roastBoxY, roastBoxW, roastBoxH, 32, "#173b2a");
   ctx.fillStyle = "#fffaf0";
-  ctx.textAlign = "center";
   ctx.font = '950 42px system-ui,-apple-system,"Segoe UI",sans-serif';
-  const roastLines = wrapLines(ctx, `“${roast}”`, 760).slice(0, 3);
-  const lh = 55;
-  const start = 1117 - ((roastLines.length - 1) * lh / 2);
-  roastLines.forEach((line, i) => ctx.fillText(line, 540, start + i * lh));
+  const roastLines = wrapLines(ctx, `“${roast}”`, 700).slice(0, 3);
+  const roastLineHeight = 55;
+  const roastFirstBaseline = 1117 - ((roastLines.length - 1) * roastLineHeight / 2);
+  drawCenteredLines(ctx, `“${roast}”`, {
+    centerX: roastCenterX,
+    firstBaselineY: roastFirstBaseline,
+    maxWidth: 700,
+    lineHeight: roastLineHeight,
+    maxLines: 3
+  });
 
   ctx.textAlign = "left";
   ctx.fillStyle = "#2f6b45";
