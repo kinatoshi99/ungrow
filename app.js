@@ -207,16 +207,67 @@ function showShame() {
   sharePanel.scrollIntoView({ behavior: "smooth", block: "start" });
 }
 
+function canvasToPngBlob(canvas) {
+  return new Promise((resolve, reject) => {
+    canvas.toBlob(blob => {
+      if (blob) resolve(blob);
+      else reject(new Error("PNG export failed"));
+    }, "image/png", 1);
+  });
+}
+
+function canSharePngFile(file) {
+  if (!navigator.share) return false;
+  if (!navigator.canShare) return true;
+  try {
+    return navigator.canShare({ files: [file] });
+  } catch {
+    return false;
+  }
+}
+
+function fallbackDownload(file, filename) {
+  const url = URL.createObjectURL(file);
+  const link = document.createElement("a");
+  link.href = url;
+  link.download = filename;
+  link.rel = "noopener";
+  document.body.appendChild(link);
+  link.click();
+  link.remove();
+  setTimeout(() => URL.revokeObjectURL(url), 30000);
+}
+
 async function downloadCard() {
   downloadButton.disabled = true;
   const originalText = downloadButton.textContent;
-  downloadButton.textContent = "⏳ RENDERING...";
+  downloadButton.textContent = "⏳ PREPARING PNG...";
+
   try {
     await renderShareCard();
-    const link = document.createElement("a");
-    link.download = `ungrow-somchai-health-${plantHealth}.png`;
-    link.href = shareCanvas.toDataURL("image/png");
-    link.click();
+
+    const filename = `ungrow-somchai-health-${plantHealth}.png`;
+    const blob = await canvasToPngBlob(shareCanvas);
+    const file = new File([blob], filename, { type: "image/png" });
+
+    if (canSharePngFile(file)) {
+      downloadButton.textContent = "📤 OPENING SHARE...";
+      try {
+        await navigator.share({
+          files: [file],
+          title: "Ungrow — SOMCHAI",
+          text: `SOMCHAI Plant Health ${plantHealth}% 🌱💀`
+        });
+        return;
+      } catch (error) {
+        if (error && error.name === "AbortError") return;
+      }
+    }
+
+    fallbackDownload(file, filename);
+  } catch (error) {
+    console.error("Could not save Ungrow PNG", error);
+    alert("บันทึกรูปไม่สำเร็จ ลองเปิดใน Safari แล้วกดอีกครั้งครับ");
   } finally {
     downloadButton.disabled = false;
     downloadButton.textContent = originalText;
@@ -227,5 +278,9 @@ roastButton.addEventListener("click", nextRoast);
 shameButton.addEventListener("click", showShame);
 downloadButton.addEventListener("click", downloadCard);
 healthSlider.addEventListener("input", event => updateHealth(event.target.value));
+
+if (navigator.share) {
+  downloadButton.textContent = "📤 SAVE / SHARE PNG";
+}
 
 updateHealth(plantHealth);
