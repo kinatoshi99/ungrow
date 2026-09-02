@@ -178,11 +178,19 @@ function wrapLines(ctx, text, maxWidth) {
 function drawCenteredLines(ctx, text, { centerX, firstBaselineY, maxWidth, lineHeight, maxLines }) {
   const lines = wrapLines(ctx, text, maxWidth);
   const visible = lines.slice(0, maxLines);
-  ctx.textAlign = "center";
+
+  // Do not rely on Canvas textAlign="center" for production Thai text.
+  // iOS Safari can place the center anchor like a start/left origin in this flow.
+  // Measure each rendered line and position its left edge explicitly instead.
+  ctx.save();
+  ctx.textAlign = "left";
   ctx.direction = "ltr";
   visible.forEach((line, index) => {
-    ctx.fillText(line, centerX, firstBaselineY + index * lineHeight);
+    const width = ctx.measureText(line).width;
+    const x = centerX - width / 2;
+    ctx.fillText(line, x, firstBaselineY + index * lineHeight);
   });
+  ctx.restore();
   return visible;
 }
 
