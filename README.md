@@ -106,3 +106,7 @@ MIT
 ## Daily Disaster Challenge
 
 Daily Disaster is deterministic and backend-free. The challenge rolls over at midnight `Asia/Bangkok`. Each character now has its own deterministic Daily for the same date, so SOMCHAI and PLOY can both be activated independently. New Daily share URLs include `d=YYYY-MM-DD` + `c` + `r`/`e`; older `d`-only Daily URLs remain backward compatible with the original global challenge. Manual changes to Health, character, or Roast Mode exit Daily context; requesting another roast stays inside the same Daily challenge.
+
+## Regression checks
+
+Run `node --test tests/*.test.cjs` with Node.js 22 or newer. No packages are required. The tests load the real page scripts and exercise both sets of UI event handlers, Daily activation for each character, share-link restoration, legacy Daily seeds, and Bangkok date rollover. They use a minimal DOM test double; browser layout and PNG rendering are not covered.
