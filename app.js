@@ -194,6 +194,50 @@ function drawCenteredLines(ctx, text, { centerX, firstBaselineY, maxWidth, lineH
   return visible;
 }
 
+function textVerticalMetrics(ctx, text, fallbackSize) {
+  const metrics = ctx.measureText(text || "Mgก");
+  return {
+    ascent: metrics.actualBoundingBoxAscent || fallbackSize * 0.8,
+    descent: metrics.actualBoundingBoxDescent || fallbackSize * 0.2
+  };
+}
+
+function drawConditionBlock(ctx, condition, { centerX, plantBottomY, statsTopY }) {
+  const regionTop = plantBottomY + 14;
+  const regionBottom = statsTopY - 16;
+  const titleToSubtitleGap = 10;
+  const subtitleLineHeight = 30;
+
+  ctx.font = '950 36px system-ui,-apple-system,"Segoe UI",sans-serif';
+  const titleLines = wrapLines(ctx, condition.title, 700).slice(0, 1);
+  const titleMetrics = textVerticalMetrics(ctx, titleLines[0], 36);
+
+  ctx.font = '700 22px system-ui,-apple-system,"Segoe UI",sans-serif';
+  const subtitleLines = wrapLines(ctx, condition.sub, 660).slice(0, 2);
+  const subtitleMetrics = textVerticalMetrics(ctx, subtitleLines[0], 22);
+  const subtitleHeight = subtitleMetrics.ascent + subtitleMetrics.descent
+    + Math.max(0, subtitleLines.length - 1) * subtitleLineHeight;
+  const blockHeight = titleMetrics.ascent + titleMetrics.descent
+    + titleToSubtitleGap + subtitleHeight;
+  const availableHeight = Math.max(0, regionBottom - regionTop);
+  const blockTop = regionTop + Math.max(0, (availableHeight - blockHeight) / 2);
+  const titleBaselineY = blockTop + titleMetrics.ascent;
+  const subtitleBaselineY = titleBaselineY + titleMetrics.descent
+    + titleToSubtitleGap + subtitleMetrics.ascent;
+
+  ctx.fillStyle = condition.color;
+  ctx.font = '950 36px system-ui,-apple-system,"Segoe UI",sans-serif';
+  drawCenteredLines(ctx, condition.title, {
+    centerX, firstBaselineY: titleBaselineY, maxWidth: 700, lineHeight: 42, maxLines: 1
+  });
+
+  ctx.fillStyle = "#64806e";
+  ctx.font = '700 22px system-ui,-apple-system,"Segoe UI",sans-serif';
+  drawCenteredLines(ctx, condition.sub, {
+    centerX, firstBaselineY: subtitleBaselineY, maxWidth: 660, lineHeight: subtitleLineHeight, maxLines: 2
+  });
+}
+
 function svgToImage(markup) {
   return new Promise((resolve, reject) => {
     const blob = new Blob([markup], { type: "image/svg+xml;charset=utf-8" });
@@ -252,22 +296,17 @@ async function renderExportCard() {
   const plantX = 330;
   const plantY = 286;
   const plantSize = 420;
+  const plantBottomY = plantY + plantSize;
+  const statsBoxY = 835;
   await drawSvgPlant(ctx, plantX, plantY, plantSize, plantSize, health);
   if (token !== exportRenderToken) return;
 
-  // Production canvas typography uses the card center as the single horizontal anchor.
-  ctx.fillStyle = condition.color;
-  ctx.font = '950 36px system-ui,-apple-system,"Segoe UI",sans-serif';
-  drawCenteredLines(ctx, condition.title, {
-    centerX: cardCenterX, firstBaselineY: 724, maxWidth: 700, lineHeight: 42, maxLines: 1
-  });
-  ctx.fillStyle = "#64806e";
-  ctx.font = '700 22px system-ui,-apple-system,"Segoe UI",sans-serif';
-  drawCenteredLines(ctx, condition.sub, {
-    centerX: cardCenterX, firstBaselineY: 762, maxWidth: 660, lineHeight: 30, maxLines: 2
+  // Keep condition copy in the safe vertical region between the artwork and stats.
+  drawConditionBlock(ctx, condition, {
+    centerX: cardCenterX, plantBottomY, statsTopY: statsBoxY
   });
 
-  roundRect(ctx, 104, 835, 872, 148, 28, "#f4efe4", "#d7cfbf", 3);
+  roundRect(ctx, 104, statsBoxY, 872, 148, 28, "#f4efe4", "#d7cfbf", 3);
   ctx.textAlign = "left";
   ctx.fillStyle = "#173b2a";
   ctx.font = '850 26px system-ui,-apple-system,"Segoe UI",sans-serif';
