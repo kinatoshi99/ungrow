@@ -22,10 +22,14 @@ const conditions = [
 ];
 
 const state = { health: 89, roastIndex: roasts.length - 1 };
-const exportLab = document.querySelector("#exportLab");
+const desktopExportLab = document.querySelector("#desktopExportLab");
+const mobileExportLab = document.querySelector("#mobileExportLab");
 const exportCanvas = document.querySelector("#exportCanvas");
-const saveExportButton = document.querySelector("#saveExportButton");
-const exportStatus = document.querySelector("#exportStatus");
+const exportCanvasParking = document.querySelector("#exportCanvasParking");
+const desktopExportPreviewSlot = document.querySelector("#desktopExportPreviewSlot");
+const mobileExportPreviewSlot = document.querySelector("#mobileExportPreviewSlot");
+const mobileViewport = window.matchMedia("(max-width: 767px)");
+let activeExportLab = null;
 let latestExportBlob = null;
 let exportRenderToken = 0;
 let exportTimer = null;
@@ -46,7 +50,8 @@ function renderUI() {
   qsa("[data-roast]").forEach(el => { el.textContent = `“${currentRoast()}”`; });
   qsa("[data-plant-svg]").forEach(svg => window.UngrowPlantSvg.render(svg, state.health));
 
-  if (!exportLab.hidden) scheduleExportRender();
+  qsa("[data-export-summary]").forEach(el => { el.textContent = `Health ${healthText} · ${condition.title}`; });
+  if (activeExportLab && !activeExportLab.hidden) scheduleExportRender();
 }
 
 function setHealth(value) {
@@ -61,11 +66,41 @@ function nextRoast() {
   renderUI();
 }
 
-function showExportLab() {
-  exportLab.hidden = false;
+function mountExportCanvas() {
+  const slot = mobileViewport.matches ? mobileExportPreviewSlot : desktopExportPreviewSlot;
+  if (slot && exportCanvas.parentElement !== slot) slot.appendChild(exportCanvas);
+}
+
+function syncExportContext({ scroll = false } = {}) {
+  const target = mobileViewport.matches ? mobileExportLab : desktopExportLab;
+  const other = mobileViewport.matches ? desktopExportLab : mobileExportLab;
+  other.hidden = true;
+  target.hidden = false;
+  activeExportLab = target;
+  mountExportCanvas();
   renderUI();
   scheduleExportRender(true);
-  exportLab.scrollIntoView({ behavior: "smooth", block: "start" });
+  if (scroll) requestAnimationFrame(() => target.scrollIntoView({ behavior: "smooth", block: "start" }));
+}
+
+function showExportLab() { syncExportContext({ scroll: true }); }
+
+function closeExportLab() {
+  desktopExportLab.hidden = true;
+  mobileExportLab.hidden = true;
+  activeExportLab = null;
+  exportCanvasParking.appendChild(exportCanvas);
+}
+
+function setExportButtons(disabled, label) {
+  qsa('[data-action="save-export"]').forEach(button => {
+    button.disabled = disabled;
+    button.textContent = label;
+  });
+}
+
+function setExportStatus(message) {
+  qsa("[data-export-status]").forEach(el => { el.textContent = message; });
 }
 
 function roundRect(ctx, x, y, w, h, r, fill, stroke, lineWidth = 1) {
@@ -133,9 +168,8 @@ async function renderExportCard() {
   const health = state.health;
   const roast = currentRoast();
 
-  saveExportButton.disabled = true;
-  saveExportButton.textContent = "⏳ PREPARING PNG...";
-  exportStatus.textContent = "กำลัง render Social Card 1080×1350…";
+  setExportButtons(true, "⏳ PREPARING PNG...");
+  setExportStatus("กำลัง render Social Card 1080×1350…");
 
   ctx.clearRect(0, 0, W, H);
   ctx.fillStyle = "#efe9dc";
@@ -210,9 +244,8 @@ async function renderExportCard() {
   const blob = await canvasBlob(exportCanvas);
   if (token !== exportRenderToken || !blob) return;
   latestExportBlob = blob;
-  saveExportButton.disabled = false;
-  saveExportButton.textContent = supportsFileShare() ? "📤 SAVE / SHARE PNG" : "⬇️ DOWNLOAD PNG";
-  exportStatus.textContent = `พร้อมแล้ว · PNG 1080×1350 · Health ${health}%`;
+  setExportButtons(false, supportsFileShare() ? "📤 SAVE / SHARE PNG" : "⬇️ DOWNLOAD PNG");
+  setExportStatus(`พร้อมแล้ว · PNG 1080×1350 · Health ${health}%`);
 }
 
 function scheduleExportRender(immediate = false) {
@@ -231,7 +264,7 @@ function supportsFileShare() {
 
 async function saveExport() {
   if (!latestExportBlob) {
-    exportStatus.textContent = "PNG ยังไม่พร้อม รอสักครู่…";
+    setExportStatus("PNG ยังไม่พร้อม รอสักครู่…");
     scheduleExportRender(true);
     return;
   }
@@ -241,10 +274,10 @@ async function saveExport() {
   if (supportsFileShare()) {
     try {
       await navigator.share({ files: [file], title: "Ungrow — SOMCHAI", text: `SOMCHAI · Plant Health ${state.health}%` });
-      exportStatus.textContent = "เปิด Share Sheet แล้ว — เลือก Save Image หรือ Save to Files ได้เลย";
+      setExportStatus("เปิด Share Sheet แล้ว — เลือก Save Image หรือ Save to Files ได้เลย");
       return;
     } catch (err) {
-      if (err?.name === "AbortError") { exportStatus.textContent = "ยกเลิกการแชร์แล้ว"; return; }
+      if (err?.name === "AbortError") { setExportStatus("ยกเลิกการแชร์แล้ว"); return; }
     }
   }
 
@@ -256,12 +289,16 @@ async function saveExport() {
   link.click();
   link.remove();
   setTimeout(() => URL.revokeObjectURL(url), 1500);
-  exportStatus.textContent = "ส่งไฟล์ให้เบราว์เซอร์ดาวน์โหลดแล้ว";
+  setExportStatus("ส่งไฟล์ให้เบราว์เซอร์ดาวน์โหลดแล้ว");
 }
 
 qsa("[data-health-slider]").forEach(slider => slider.addEventListener("input", e => setHealth(e.target.value)));
 qsa('[data-action="roast"]').forEach(button => button.addEventListener("click", nextRoast));
 qsa('[data-action="shame"]').forEach(button => button.addEventListener("click", showExportLab));
-saveExportButton.addEventListener("click", saveExport);
+qsa('[data-action="save-export"]').forEach(button => button.addEventListener("click", saveExport));
+qsa('[data-action="close-export"]').forEach(button => button.addEventListener("click", closeExportLab));
+mobileViewport.addEventListener?.("change", () => {
+  if (activeExportLab) syncExportContext({ scroll: false });
+});
 
 renderUI();

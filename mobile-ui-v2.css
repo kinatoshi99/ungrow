@@ -1,1 +1,64 @@
-@media(max-width:767px){html,body{width:100%;max-width:100%;overflow-x:hidden}body{background:var(--paper)}.mobile-view{padding:8px}.mobile-shell{width:100%;background:var(--paper);border:2px solid var(--ink);border-radius:20px;box-shadow:5px 5px 0 var(--ink);padding:16px;overflow:hidden}.mobile-head .brand{font-size:10px}.mobile-head .title{margin-top:8px;font-size:clamp(48px,15vw,68px)}.mobile-head .title span{display:block;margin-top:8px;color:var(--green);font-size:.5em}.mobile-head .subtitle{font-size:12px;line-height:1.45}.mobile-plant-card{margin-top:14px;background:#f7f2e8;border:1px solid var(--line);border-radius:20px;padding:14px}.mobile-plant-card .plant-stage{width:min(100%,290px);margin:0 auto}.mobile-plant-card .condition{text-align:center;padding:4px 8px 8px}.mobile-plant-card .condition strong{font-size:22px}.mobile-plant-card .condition span{font-size:11px}.mobile-stack{display:grid;gap:12px;margin-top:12px}.mobile-stack .roast-box{min-height:100px;font-size:clamp(20px,6vw,26px)}.mobile-stack .actions{display:grid;grid-template-columns:1fr;gap:10px}.mobile-stack .action-btn{width:100%;font-size:16px;padding:15px 16px}.mobile-stack .health-control,.mobile-stack .stats-card{width:100%}.mobile-stack .health-control__top{font-size:13px}.mobile-stack .health-control__top strong{font-size:24px}.mobile-stack .stat-row{font-size:12px}.mobile-view .app-footer{flex-direction:column;gap:6px}.mobile-hint{text-align:center;font-size:10px;color:#718174;line-height:1.45;margin:0}}
+@media(max-width:767px){
+  html,body{width:100%;max-width:100%;overflow-x:hidden}
+  body{background:var(--paper);padding:0 max(0px,env(safe-area-inset-right)) max(0px,env(safe-area-inset-bottom)) max(0px,env(safe-area-inset-left))}
+  .mobile-view{padding:0}
+  .mobile-shell{width:100%;min-height:100dvh;background:var(--paper);padding:18px 16px 28px}
+  .mobile-topline{display:flex;align-items:center;justify-content:space-between;gap:12px}
+  .mobile-head .brand{font-size:10px;letter-spacing:.1em}
+  .mobile-repo{min-height:44px;display:inline-flex;align-items:center;color:var(--ink);font-size:12px;font-weight:900;text-decoration:none;padding:0 4px}
+  .mobile-title{margin:18px 0 0;font-size:clamp(48px,14vw,62px);font-weight:950;letter-spacing:-.055em;line-height:.88}
+  .mobile-meta{margin:10px 0 0;color:var(--muted);font-size:15px;font-weight:750}
+  .mobile-play{display:grid;gap:16px;margin-top:18px}
+  .mobile-plant-card{background:#f7f2e8;border:1px solid var(--line);border-radius:22px;padding:12px 14px 16px;overflow:hidden}
+  .mobile-plant-card .plant-stage{width:min(86vw,300px);margin:0 auto}
+  .mobile-plant-card .condition{text-align:center;margin-top:-2px;padding:0 6px}
+  .mobile-plant-card .condition strong{font-size:24px}
+  .mobile-plant-card .condition span{max-width:31ch;margin:8px auto 0;font-size:14px;line-height:1.5}
+  .mobile-health-panel{display:grid;gap:10px}
+  .mobile-health-control{padding:15px 16px;background:#fffaf0;border:1px solid var(--line);border-radius:18px}
+  .mobile-health-control .health-control__top{font-size:16px}
+  .mobile-health-control .health-control__top strong{font-size:26px}
+  .mobile-health-control input[type=range]{height:44px;margin:6px 0 0}
+  .mobile-health-control .health-scale{margin-top:-4px;font-size:11px}
+  .mobile-owner-skill{padding:12px 16px 8px;background:#f5f0e6;border-radius:16px}
+  .mobile-owner-skill .stat-row{font-size:13px}
+  .mobile-owner-skill .meter{margin-bottom:4px}
+  .mobile-roast-card{display:grid;gap:10px}
+  .mobile-roast-card .roast-box{min-height:116px;padding:22px 18px;font-size:clamp(21px,6vw,27px);border-radius:20px}
+  .mobile-roast-btn,.mobile-shame-btn{width:100%;min-height:52px;font-size:16px}
+  .mobile-shame-btn{margin-top:0;background:var(--ink);color:var(--paper)}
+  .mobile-export-lab{width:100%;padding:18px 12px calc(22px + env(safe-area-inset-bottom));background:var(--bg);border-top:1px solid var(--line)}
+  .mobile-export-lab[hidden]{display:none!important}
+  .mobile-export-shell{width:100%;max-width:520px;margin:0 auto}
+  .mobile-export-head{display:flex;align-items:flex-start;justify-content:space-between;gap:14px;margin:0 4px 14px}
+  .mobile-export-head h2{margin:0;font-size:24px;line-height:1.1}
+  .mobile-export-head p{margin:7px 0 0;color:var(--muted);font-size:14px;font-weight:750}
+  .mobile-close{appearance:none;width:44px;height:44px;flex:0 0 44px;border:1px solid var(--line);border-radius:50%;background:var(--paper);color:var(--ink);font-size:28px;line-height:1;cursor:pointer}
+  .mobile-export-preview{width:100%;background:#e6dfd2;border-radius:20px;padding:8px;overflow:hidden}
+  .mobile-export-preview .export-canvas{display:block;width:100%;height:auto;aspect-ratio:4/5;border-radius:14px;background:var(--paper);box-shadow:0 8px 24px rgba(23,59,42,.12)}
+  .mobile-export-actions{display:grid;gap:8px;margin-top:12px;position:sticky;bottom:max(8px,env(safe-area-inset-bottom));z-index:5;padding:8px 0;background:linear-gradient(to bottom,rgba(239,233,220,0),var(--bg) 22%)}
+  .mobile-export-actions .action-btn{width:100%;min-height:56px;font-size:16px}
+  .mobile-export-actions .export-status{min-height:18px;text-align:center;font-size:12px;color:var(--muted);line-height:1.4}
+  .desktop-export-lab{display:none!important}
+}
+
+@media(max-width:374px){
+  .mobile-shell{padding-left:13px;padding-right:13px}
+  .mobile-title{font-size:46px}
+  .mobile-plant-card .plant-stage{width:min(84vw,270px)}
+  .mobile-plant-card .condition strong{font-size:22px}
+  .mobile-roast-card .roast-box{font-size:21px}
+}
+
+@media(pointer:coarse) and (max-width:767px){
+  .action-btn,.mobile-close,.mobile-repo{touch-action:manipulation}
+}
+
+@media(max-width:767px){
+  .mobile-shell,.mobile-head,.mobile-play,.mobile-plant-card,.mobile-health-panel,.mobile-health-control,.mobile-owner-skill,.mobile-roast-card,.roast-box{min-width:0;max-width:100%}
+  .mobile-play{grid-template-columns:minmax(0,1fr)}
+  .roast-box,[data-roast],.condition span{overflow-wrap:anywhere;word-break:normal}
+  .mobile-plant-card .condition{margin-top:8px}
+  .mobile-health-control input[type=range]{display:block;min-width:0;max-width:100%;margin-left:0;margin-right:0}
+  .mobile-topline>*{min-width:0}
+}

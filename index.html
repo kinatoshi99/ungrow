@@ -5,10 +5,10 @@
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
   <meta name="description" content="Ungrow v0.0.1 — SOMCHAI Roast Button. An anti-plant-care open source joke project." />
   <title>Ungrow v0.0.1 — SOMCHAI Roast Button</title>
-  <link rel="stylesheet" href="ui-base.css?v=refactor2" />
-  <link rel="stylesheet" href="desktop-ui.css?v=refactor2" />
-  <link rel="stylesheet" href="mobile-ui-v2.css?v=refactor2" />
-  <link rel="stylesheet" href="export-card.css?v=refactor2" />
+  <link rel="stylesheet" href="ui-base.css?v=adapt1" />
+  <link rel="stylesheet" href="desktop-ui.css?v=adapt1" />
+  <link rel="stylesheet" href="mobile-ui-v2.css?v=adapt1" />
+  <link rel="stylesheet" href="export-card.css?v=adapt1" />
 </head>
 <body>
   <main id="appRoot">
@@ -52,39 +52,46 @@
     <section class="app-view mobile-view" aria-label="Ungrow mobile interface">
       <div class="mobile-shell">
         <header class="mobile-head">
-          <div class="brand">🌱💀 UNGROW v0.0.1</div>
-          <h1 class="title">SOMCHAI<span>Roast Button</span></h1>
-          <p class="subtitle">Anti-Plant Care Project · มือถือเน้นเล่นไว แชร์ไว ยับไว</p>
+          <div class="mobile-topline">
+            <div class="brand">🌱💀 UNGROW v0.0.1</div>
+            <a class="mobile-repo" href="https://github.com/kinatoshi99/ungrow" target="_blank" rel="noreferrer">GitHub ↗</a>
+          </div>
+          <h1 class="mobile-title">SOMCHAI</h1>
+          <p class="mobile-meta">Snake Plant · Stoic Introvert</p>
         </header>
-        <div class="mobile-plant-card">
-          <div class="plant-stage"><svg data-plant-svg viewBox="0 0 320 320" role="img" aria-label="SOMCHAI plant health illustration"></svg></div>
-          <div class="condition"><strong data-condition-title>เริ่มช้ำใจ</strong><span data-condition-sub>มีแผลนิดหน่อย แต่ยังมีแรงด่าเจ้าของ</span></div>
-        </div>
-        <div class="mobile-stack">
-          <div class="stats-card">
-            <div class="stat-row"><span>Plant Health</span><b data-health-value>89%</b></div>
-            <div class="meter"><i data-health-bar style="width:89%"></i></div>
-            <div class="stat-row"><span>Owner Skill</span><b>21%</b></div>
-            <div class="meter owner"><i style="width:21%"></i></div>
+
+        <section class="mobile-play" aria-label="SOMCHAI roast controls">
+          <div class="mobile-plant-card">
+            <div class="plant-stage"><svg data-plant-svg viewBox="0 0 320 320" role="img" aria-label="SOMCHAI plant health illustration"></svg></div>
+            <div class="condition"><strong data-condition-title>เริ่มช้ำใจ</strong><span data-condition-sub>มีแผลนิดหน่อย แต่ยังมีแรงด่าเจ้าของ</span></div>
           </div>
-          <div class="health-control">
-            <div class="health-control__top"><span>🧪 Plant Health Damage</span><strong data-health-value>89%</strong></div>
-            <input type="range" min="0" max="100" value="89" data-health-slider aria-label="Plant Health" />
-            <div class="health-scale"><span>💀 0</span><span>50</span><span>100 🌱</span></div>
+
+          <div class="mobile-health-panel">
+            <div class="health-control mobile-health-control">
+              <div class="health-control__top"><span>Plant Health</span><strong data-health-value>89%</strong></div>
+              <input type="range" min="0" max="100" value="89" data-health-slider aria-label="Plant Health" />
+              <div class="health-scale"><span>💀 0</span><span>50</span><span>100 🌱</span></div>
+            </div>
+            <div class="mobile-owner-skill">
+              <div class="stat-row"><span>Owner Skill</span><b>21%</b></div>
+              <div class="meter owner"><i style="width:21%"></i></div>
+            </div>
           </div>
-          <div class="roast-box" data-roast>“รอดมาได้ไม่ใช่เพราะเจ้าของ แต่เพราะพันธุกรรม”</div>
-          <div class="actions">
-            <button class="action-btn" type="button" data-action="roast">🔥 ROAST ME</button>
-            <button class="action-btn secondary" type="button" data-action="shame">📸 SHAME ME</button>
+
+          <div class="mobile-roast-card">
+            <div class="roast-box" data-roast>“รอดมาได้ไม่ใช่เพราะเจ้าของ แต่เพราะพันธุกรรม”</div>
+            <button class="action-btn mobile-roast-btn" type="button" data-action="roast">🔥 ROAST อีกที</button>
           </div>
-          <p class="mobile-hint">Social Card ถูก render แยกจาก UI นี้แล้ว จอจะเล็กแค่ไหน PNG ก็ไม่เพี้ยน 😎</p>
-        </div>
-        <footer class="app-footer"><span>Mobile UI · Thumb friendly.</span><a href="https://github.com/kinatoshi99/ungrow" target="_blank" rel="noreferrer">GitHub ↗</a></footer>
+
+          <button class="action-btn secondary mobile-shame-btn" type="button" data-action="shame">📸 ทำการ์ดประจาน</button>
+        </section>
       </div>
     </section>
 
-    <section id="exportLab" class="export-lab" hidden aria-label="Export card lab">
-      <div class="export-head"><div><div class="export-kicker">EXPORT CARD · 1080×1350</div><h2>Social Card Renderer 📸</h2></div></div>
+    <section id="desktopExportLab" class="desktop-export-lab" hidden aria-label="Desktop export card lab">
+      <div class="export-head">
+        <div><h2>Social Card Renderer 📸</h2><p>Canvas 1080×1350 · แยกจาก Desktop UI</p></div>
+      </div>
       <div class="export-grid">
         <div class="export-controls">
           <div class="health-control">
@@ -93,15 +100,36 @@
             <div class="health-scale"><span>💀 0</span><span>50</span><span>100 🌱</span></div>
           </div>
           <div class="condition"><strong data-condition-title>เริ่มช้ำใจ</strong><span data-condition-sub>มีแผลนิดหน่อย แต่ยังมีแรงด่าเจ้าของ</span></div>
-          <p class="export-note">Preview ด้านขวา/ด้านล่างคือ Canvas ตัวเดียวกับไฟล์ PNG จริง จึงไม่ขึ้นกับ layout ของมือถือหรือ desktop</p>
-          <button id="saveExportButton" class="action-btn save" type="button" disabled>⏳ PREPARING PNG...</button>
-          <div id="exportStatus" class="export-status" aria-live="polite"></div>
+          <p class="export-note">Preview นี้มาจาก Canvas ตัวเดียวกับ PNG ที่บันทึกจริง จึงไม่ขึ้นกับ layout ของหน้าเว็บ</p>
+          <button class="action-btn save" type="button" data-action="save-export" disabled>⏳ PREPARING PNG...</button>
+          <div class="export-status" data-export-status aria-live="polite"></div>
         </div>
-        <div class="export-preview-wrap"><canvas id="exportCanvas" class="export-canvas" width="1080" height="1350" aria-label="Ungrow social card preview"></canvas></div>
+        <div id="desktopExportPreviewSlot" class="export-preview-wrap"></div>
       </div>
     </section>
+
+    <section id="mobileExportLab" class="mobile-export-lab" hidden aria-label="Mobile social card export">
+      <div class="mobile-export-shell">
+        <div class="mobile-export-head">
+          <div>
+            <h2>การ์ดพร้อมประจาน 💀</h2>
+            <p data-export-summary>Health 89% · เริ่มช้ำใจ</p>
+          </div>
+          <button class="mobile-close" type="button" data-action="close-export" aria-label="ปิด Social Card">×</button>
+        </div>
+        <div id="mobileExportPreviewSlot" class="mobile-export-preview"></div>
+        <div class="mobile-export-actions">
+          <button class="action-btn save" type="button" data-action="save-export" disabled>⏳ PREPARING PNG...</button>
+          <div class="export-status" data-export-status aria-live="polite"></div>
+        </div>
+      </div>
+    </section>
+
+    <div id="exportCanvasParking" hidden>
+      <canvas id="exportCanvas" class="export-canvas" width="1080" height="1350" aria-label="Ungrow social card preview"></canvas>
+    </div>
   </main>
-  <script src="plant-svg.js?v=refactor2"></script>
-  <script src="app.js?v=refactor2"></script>
+  <script src="plant-svg.js?v=adapt1"></script>
+  <script src="app.js?v=adapt1"></script>
 </body>
 </html>
