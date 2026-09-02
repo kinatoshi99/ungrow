@@ -31,9 +31,7 @@
     font-size: 52px;
   }
 
-  .eyebrow {
-    font-size: 10px;
-  }
+  .eyebrow { font-size: 10px; }
 
   h1 {
     margin-top: 8px;
@@ -41,9 +39,7 @@
     line-height: .88;
   }
 
-  h1 span {
-    font-size: .58em;
-  }
+  h1 span { font-size: .58em; }
 
   .tagline {
     margin-bottom: 8px;
@@ -86,9 +82,7 @@
     box-shadow: 0 4px 0 var(--ink);
   }
 
-  .shame-button {
-    box-shadow: 0 4px 0 #0b2117;
-  }
+  .shame-button { box-shadow: 0 4px 0 #0b2117; }
 
   .hint {
     margin: 10px 0 0;
@@ -135,13 +129,9 @@
     font-size: 12px;
   }
 
-  .damage-label strong {
-    font-size: 22px;
-  }
+  .damage-label strong { font-size: 22px; }
 
-  #healthSlider {
-    margin: 14px 0 6px;
-  }
+  #healthSlider { margin: 14px 0 6px; }
 
   .damage-caption {
     font-size: 10px;
@@ -158,13 +148,8 @@
     overflow: hidden;
   }
 
-  .social-card-top {
-    font-size: 9px;
-  }
-
-  .social-card-555 {
-    font-size: 22px;
-  }
+  .social-card-top { font-size: 9px; }
+  .social-card-555 { font-size: 22px; }
 
   .social-card-title {
     margin-top: 6px;
@@ -185,46 +170,53 @@
     justify-content: flex-start;
     width: 100%;
     min-height: 0;
-    gap: 0;
-    margin: 4px 0 8px;
+    gap: 12px;
+    margin: 8px 0 14px;
     overflow: visible;
   }
 
-  .shame-plant {
-    width: 210px;
-    height: 250px;
+  .shame-svg {
+    display: block;
     flex: 0 0 auto;
-    justify-self: auto;
-    transform: scale(.72);
-    transform-origin: center center;
-    margin: -26px auto -40px;
+    width: min(100%, 220px);
+    height: auto;
+    aspect-ratio: 1 / 1;
+    margin: 0 auto;
+    overflow: hidden;
   }
 
   .condition-copy {
+    position: relative;
+    z-index: 3;
     width: 100%;
-    margin: 0 0 10px;
+    margin: 0;
+    padding: 2px 8px 10px;
     text-align: center;
+    background: var(--paper);
   }
 
   .condition-copy strong {
+    display: block;
     font-size: 18px;
-    line-height: 1.1;
+    line-height: 1.2;
   }
 
   .condition-copy span {
+    display: block;
     max-width: 280px;
-    margin: 6px auto 0;
+    margin: 7px auto 0;
     font-size: 10px;
+    line-height: 1.5;
   }
 
   .social-stats {
+    position: relative;
+    z-index: 2;
     padding: 12px;
     border-radius: 12px;
   }
 
-  .social-stat-row {
-    font-size: 10px;
-  }
+  .social-stat-row { font-size: 10px; }
 
   .social-roast {
     min-height: 92px;
@@ -268,7 +260,9 @@
   .plant { transform: scale(.76); margin-top: -25px; margin-bottom: -22px; }
   .social-card-dom { padding: 13px; }
   .social-card-title { font-size: 34px; }
-  .shame-plant { transform: scale(.66); margin-top: -32px; margin-bottom: -48px; }
+  .shame-visual { gap: 10px; margin-top: 6px; }
+  .shame-svg { width: min(100%, 198px); margin: 0 auto; }
+  .condition-copy { padding-top: 0; }
   .condition-copy strong { font-size: 16px; }
   .social-roast { font-size: 17px; }
 }
