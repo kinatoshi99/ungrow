@@ -1,0 +1,80 @@
+.shame-svg {
+  display: block;
+  width: min(100%, 250px);
+  height: auto;
+  overflow: visible;
+  filter: drop-shadow(0 8px 8px rgba(23,59,42,.08));
+}
+
+.shame-visual {
+  display: grid;
+  grid-template-columns: minmax(200px, 260px) 1fr;
+  align-items: center;
+  gap: 18px;
+  margin: 8px 0 12px;
+  min-height: 250px;
+}
+
+.condition-copy {
+  align-self: center;
+}
+
+.condition-copy strong {
+  display: block;
+  font-size: clamp(19px, 4vw, 27px);
+  line-height: 1.05;
+}
+
+.condition-copy span {
+  display: block;
+  margin-top: 7px;
+  max-width: 230px;
+  color: #64806e;
+  font-size: 11px;
+  line-height: 1.45;
+}
+
+@media (max-width: 700px) {
+  .shame-visual {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0;
+    width: 100%;
+    min-height: 0;
+    margin: 2px 0 8px;
+  }
+
+  .shame-svg {
+    width: min(100%, 220px);
+    margin: -8px auto -12px;
+  }
+
+  .condition-copy {
+    width: 100%;
+    margin: 0 0 10px;
+    text-align: center;
+  }
+
+  .condition-copy strong {
+    font-size: 18px;
+  }
+
+  .condition-copy span {
+    max-width: 280px;
+    margin: 6px auto 0;
+    font-size: 10px;
+  }
+}
+
+@media (max-width: 390px) {
+  .shame-svg {
+    width: min(100%, 198px);
+    margin-top: -12px;
+    margin-bottom: -16px;
+  }
+
+  .condition-copy strong {
+    font-size: 16px;
+  }
+}
