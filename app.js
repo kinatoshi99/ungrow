@@ -1,27 +1,14 @@
-const roasts = [
-  "กูรอดเอง ไม่ต้องเคลมผลงาน",
-  "เจ้าของ Skill 12% แต่ Confidence 97%",
-  "ธรรมชาติสร้างกูมาแข็งแรง เผื่อเจอเจ้าของแบบมึง",
-  "KPI วันนี้: เอาตัวรอดจากเจ้าของ",
-  "วันนี้ยังไม่ตาย ผิดแผนนิดหน่อย",
-  "กูเป็นต้นไม้ ไม่ใช่โปรเจกต์ทดลอง",
-  "ไม่ต้องห่วงกู ห่วงต้นถัดไปก่อน",
-  "ถ้าจะลืมกันขนาดนี้ ซื้อก้อนหินน่าจะเหมาะกว่า",
-  "ผ่านมาเยอะ เจอฝ่ายบริหารแบบนี้ก็เพิ่งเคย",
-  "รอดมาได้ไม่ใช่เพราะเจ้าของ แต่เพราะพันธุกรรม"
-];
+const characters = window.UngrowCharacters;
+const plantRenderers = {
+  somchai: window.UngrowPlantSvg,
+  ploy: window.UngrowPloySvg
+};
 
-const conditions = [
-  { min: 90, key: "healthy", title: "ยังปากดีอยู่", sub: "สุขภาพยังดี เลยยังมีแรงด่าเจ้าของ", color: "#2f6b45" },
-  { min: 75, key: "tired", title: "เริ่มช้ำใจ", sub: "มีแผลนิดหน่อย แต่ยังมีแรงด่าเจ้าของ", color: "#6c8f49" },
-  { min: 60, key: "bruised", title: "โทรมแต่ยังเถียงไหว", sub: "ขอบตาดำ ใบเริ่มตก และหมดศรัทธาในฝ่ายบริหาร", color: "#9a873c" },
-  { min: 40, key: "sick", title: "ป่วยแต่ยังไม่ยอมไป", sub: "ติดปรอทกับใบแล้ว แต่ยังอยู่เพราะพันธุกรรมล้วน ๆ", color: "#c77935" },
-  { min: 20, key: "critical", title: "เข้า ICU ต้นไม้", sub: "เฝือกมา กระถางร้าวแล้ว กรุณาหยุดดูแลเพิ่ม", color: "#c84b31" },
-  { min: 1, key: "disaster", title: "ยับแบบมีตำนาน", sub: "แมลงวันเริ่มมา แต่เจ้าของยัง Confidence 97%", color: "#8f3f36" },
-  { min: 0, key: "heaven", title: "ลาออกจากโลกพฤกษศาสตร์", sub: "RIP SOMCHAI — ผู้เสียหายจากการบริหาร", color: "#493551" }
-];
-
-const state = { health: 89, roastIndex: roasts.length - 1 };
+const state = {
+  characterId: "somchai",
+  health: 89,
+  roastIndex: characters.somchai.roasts.length - 1
+};
 const desktopExportLab = document.querySelector("#desktopExportLab");
 const mobileExportLab = document.querySelector("#mobileExportLab");
 const exportCanvas = document.querySelector("#exportCanvas");
@@ -34,23 +21,48 @@ let latestExportBlob = null;
 let exportRenderToken = 0;
 let exportTimer = null;
 
-function currentRoast() { return roasts[state.roastIndex]; }
-function getCondition(health = state.health) { return conditions.find(item => health >= item.min) || conditions[conditions.length - 1]; }
+function currentCharacter() { return characters[state.characterId] || characters.somchai; }
+function currentRoast() {
+  const roasts = currentCharacter().roasts;
+  return roasts[state.roastIndex % roasts.length];
+}
+function currentAward() {
+  const awards = currentCharacter().awardLines;
+  return awards[state.roastIndex % awards.length];
+}
+function currentPlantRenderer() { return plantRenderers[currentCharacter().rendererId] || plantRenderers.somchai; }
+function getCondition(health = state.health) {
+  const conditions = currentCharacter().conditions;
+  return conditions.find(item => health >= item.min) || conditions[conditions.length - 1];
+}
 function qsa(selector) { return [...document.querySelectorAll(selector)]; }
 
 function renderUI() {
+  const character = currentCharacter();
   const condition = getCondition();
+  const renderer = currentPlantRenderer();
   const healthText = `${state.health}%`;
+  const ownerSkillText = `${character.ownerSkill}%`;
 
+  qsa("[data-character-name]").forEach(el => { el.textContent = character.name; });
+  qsa("[data-character-subtitle]").forEach(el => { el.textContent = character.subtitle; });
+  qsa("[data-character-plant-label]").forEach(el => { el.setAttribute("aria-label", `${character.name} ${character.plant} health illustration`); });
+  qsa("[data-character-section-label]").forEach(el => { el.setAttribute("aria-label", `${character.name} roast controls`); });
+  qsa("[data-character-id]").forEach(button => {
+    const selected = button.dataset.characterId === character.id;
+    button.setAttribute("aria-pressed", String(selected));
+  });
+  qsa("[data-owner-skill-value]").forEach(el => { el.textContent = ownerSkillText; });
+  qsa("[data-owner-skill-bar]").forEach(el => { el.style.width = ownerSkillText; });
   qsa("[data-health-value]").forEach(el => { el.textContent = healthText; });
   qsa("[data-health-slider]").forEach(el => { if (Number(el.value) !== state.health) el.value = state.health; });
   qsa("[data-health-bar]").forEach(el => { el.style.width = healthText; el.style.background = condition.color; });
   qsa("[data-condition-title]").forEach(el => { el.textContent = condition.title; el.style.color = condition.color; });
   qsa("[data-condition-sub]").forEach(el => { el.textContent = condition.sub; });
   qsa("[data-roast]").forEach(el => { el.textContent = `“${currentRoast()}”`; });
-  qsa("[data-plant-svg]").forEach(svg => window.UngrowPlantSvg.render(svg, state.health));
+  qsa("[data-plant-svg]").forEach(svg => renderer.render(svg, state.health));
 
-  qsa("[data-export-summary]").forEach(el => { el.textContent = `Health ${healthText} · ${condition.title}`; });
+  qsa("[data-export-summary]").forEach(el => { el.textContent = `${character.name} · Health ${healthText} · ${condition.title}`; });
   if (activeExportLab && !activeExportLab.hidden) scheduleExportRender();
 }
 
@@ -59,7 +71,16 @@ function setHealth(value) {
   renderUI();
 }
 
+function setCharacter(characterId) {
+  if (!characters[characterId] || characterId === state.characterId) return;
+  state.characterId = characterId;
+  state.roastIndex = Math.min(state.roastIndex, currentCharacter().roasts.length - 1);
+  latestExportBlob = null;
+  renderUI();
+}
+
 function nextRoast() {
+  const roasts = currentCharacter().roasts;
   let next = state.roastIndex;
   while (next === state.roastIndex && roasts.length > 1) next = Math.floor(Math.random() * roasts.length);
   state.roastIndex = next;
@@ -249,8 +270,8 @@ function svgToImage(markup) {
   });
 }
 
-async function drawSvgPlant(ctx, x, y, width, height, health) {
-  const image = await svgToImage(window.UngrowPlantSvg.buildStandalone(health));
+async function drawSvgPlant(ctx, x, y, width, height, health, renderer = currentPlantRenderer()) {
+  const image = await svgToImage(renderer.buildStandalone(health));
   ctx.drawImage(image, x, y, width, height);
 }
 
@@ -262,6 +283,8 @@ async function renderExportCard() {
   const token = ++exportRenderToken;
   const ctx = exportCanvas.getContext("2d");
   const W = 1080, H = 1350;
+  const character = currentCharacter();
+  const renderer = currentPlantRenderer();
   const condition = getCondition();
   const health = state.health;
   const roast = currentRoast();
@@ -287,18 +310,16 @@ async function renderExportCard() {
   ctx.textAlign = "left";
   ctx.fillStyle = "#173b2a";
   ctx.font = '950 78px system-ui,-apple-system,"Segoe UI",sans-serif';
-  ctx.fillText("SOMCHAI", 104, 218);
+  ctx.fillText(character.name, 104, 218);
   ctx.fillStyle = "#64806e";
   ctx.font = '700 28px system-ui,-apple-system,"Segoe UI",sans-serif';
-  ctx.fillText("Snake Plant · Stoic Introvert", 108, 263);
+  ctx.fillText(character.subtitle, 108, 263);
 
   const cardCenterX = W / 2;
-  const plantX = 330;
-  const plantY = 286;
-  const plantSize = 420;
+  const { plantX, plantY, plantSize } = character.exportLayout;
   const plantBottomY = plantY + plantSize;
   const statsBoxY = 835;
-  await drawSvgPlant(ctx, plantX, plantY, plantSize, plantSize, health);
+  await drawSvgPlant(ctx, plantX, plantY, plantSize, plantSize, health, renderer);
   if (token !== exportRenderToken) return;
 
   // Keep condition copy in the safe vertical region between the artwork and stats.
@@ -318,10 +339,10 @@ async function renderExportCard() {
   if (health > 0) roundRect(ctx, 144, 898, 786 * health / 100, 14, 7, condition.color);
   ctx.fillText("Owner Skill", 144, 946);
   ctx.textAlign = "right";
-  ctx.fillText("21%", 930, 946);
+  ctx.fillText(`${character.ownerSkill}%`, 930, 946);
   ctx.textAlign = "left";
   roundRect(ctx, 144, 960, 786, 14, 7, "#ded7c9");
-  roundRect(ctx, 144, 960, 165, 14, 7, "#c84b31");
+  roundRect(ctx, 144, 960, 786 * character.ownerSkill / 100, 14, 7, "#c84b31");
 
   const roastBoxX = 104;
   const roastBoxY = 1018;
@@ -345,10 +366,10 @@ async function renderExportCard() {
   ctx.textAlign = "left";
   ctx.fillStyle = "#2f6b45";
   ctx.font = '900 25px system-ui,-apple-system,"Segoe UI",sans-serif';
-  ctx.fillText("🏆 เจ้าของที่ต้นไม้ไม่เคยร้องขอ", 104, 1250);
+  ctx.fillText(`🏆 ${currentAward()}`, 104, 1250);
   ctx.fillStyle = "#718174";
   ctx.font = '700 18px system-ui,-apple-system,"Segoe UI",sans-serif';
-  ctx.fillText("#Ungrow   #PlantRoast   #SnakePlant", 104, 1282);
+  ctx.fillText(character.hashtags.join("   "), 104, 1282);
 
   const blob = await canvasBlob(exportCanvas);
   if (token !== exportRenderToken || !blob) return;
@@ -377,12 +398,13 @@ async function saveExport() {
     scheduleExportRender(true);
     return;
   }
-  const filename = `ungrow-somchai-health-${state.health}.png`;
+  const character = currentCharacter();
+  const filename = `ungrow-${character.id}-health-${state.health}.png`;
   const file = new File([latestExportBlob], filename, { type: "image/png" });
 
   if (supportsFileShare()) {
     try {
-      await navigator.share({ files: [file], title: "Ungrow — SOMCHAI", text: `SOMCHAI · Plant Health ${state.health}%` });
+      await navigator.share({ files: [file], title: `Ungrow — ${character.name}`, text: `${character.name} · Plant Health ${state.health}%` });
       setExportStatus("เปิด Share Sheet แล้ว — เลือก Save Image หรือ Save to Files ได้เลย");
       return;
     } catch (err) {
@@ -401,6 +423,7 @@ async function saveExport() {
   setExportStatus("ส่งไฟล์ให้เบราว์เซอร์ดาวน์โหลดแล้ว");
 }
 
+qsa("[data-character-id]").forEach(button => button.addEventListener("click", () => setCharacter(button.dataset.characterId)));
 qsa("[data-health-slider]").forEach(slider => slider.addEventListener("input", e => setHealth(e.target.value)));
 qsa('[data-action="roast"]').forEach(button => button.addEventListener("click", nextRoast));
 qsa('[data-action="shame"]').forEach(button => button.addEventListener("click", showExportLab));
