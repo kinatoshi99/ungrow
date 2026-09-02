@@ -54,6 +54,7 @@ export-card.css     # Export Lab / Canvas preview
 characters.js       # Shared SOMCHAI/PLOY character data
 roast-modes.js       # 50 slang entries, intensity levels, character roast examples
 roast-matrix.js      # Health intent × Roast Mode × character roast matrix
+daily-challenge.js   # Deterministic Daily Disaster generator (Asia/Bangkok day)
 plant-svg.js        # SOMCHAI SVG renderer + health states
 ploy-svg.js         # PLOY Peace Lily SVG renderer + health states
 app.js              # Character-aware shared state, interactions, PNG/share logic
@@ -95,8 +96,13 @@ Good first contribution ideas:
 - `v0.0.2` — Shared character data model + PLOY Peace Lily ✅
 - `v0.0.3` — Roast modes + 50-entry slang bank + 18+ gate + shareable `m=` state ✅
 - `v0.0.4` — Health-aware roast engine (5 intents × 4 modes × 2 characters) ✅
-- `v0.0.5` — Third plant character / easier community contributions
+- `v0.0.5` — Daily Disaster Challenge ✅
+- `v0.0.6` — Third plant character / easier community contributions
 
 ## License
 
 MIT
+
+## Daily Disaster Challenge
+
+Daily Disaster is deterministic and backend-free. The challenge rolls over at midnight `Asia/Bangkok`; the same date key produces the same character, Health, Roast Mode (1–3), and starting roast for everyone. Daily share URLs use `d=YYYY-MM-DD` plus `r`/`e`, so an older challenge remains reproducible. Manual changes to Health, character, or Roast Mode exit Daily context; requesting another roast stays inside the same Daily challenge.

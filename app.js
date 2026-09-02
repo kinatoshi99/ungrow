@@ -1,6 +1,7 @@
 const characters = window.UngrowCharacters;
 const roastModes = window.UngrowRoastModes;
 const roastMatrix = window.UngrowRoastMatrix;
+const dailyChallenge = window.UngrowDailyChallenge;
 const plantRenderers = {
   somchai: window.UngrowPlantSvg,
   ploy: window.UngrowPloySvg
@@ -46,19 +47,23 @@ function roastsForState(character, { level, health, engine }) {
 
 function readStateFromUrl() {
   const params = new URLSearchParams(window.location.search);
-  const requestedCharacter = params.get("c");
+  const requestedDailyKey = params.get("d");
+  const daily = dailyChallenge.validDateKey(requestedDailyKey)
+    ? dailyChallenge.generate(requestedDailyKey)
+    : null;
+  const requestedCharacter = daily?.characterId || params.get("c");
   const characterId = characters[requestedCharacter] ? requestedCharacter : DEFAULT_STATE.characterId;
   const character = characters[characterId];
-  const requestedHealth = Number.parseInt(params.get("h"), 10);
+  const requestedHealth = daily?.health ?? Number.parseInt(params.get("h"), 10);
   const health = Number.isFinite(requestedHealth)
     ? Math.max(0, Math.min(100, requestedHealth))
     : DEFAULT_STATE.health;
-  const parsedMode = Number.parseInt(params.get("m"), 10);
+  const parsedMode = daily?.roastMode ?? Number.parseInt(params.get("m"), 10);
   const requestedMode = [1, 2, 3, 4].includes(parsedMode) ? parsedMode : DEFAULT_STATE.roastMode;
   const requestedRoast = Number.parseInt(params.get("r"), 10);
   const parsedEngine = Number.parseInt(params.get("e"), 10);
-  const legacySharedUrl = !params.has("e") && params.has("r");
-  const roastEngine = parsedEngine === 1 ? 1 : parsedEngine === 2 ? 2 : legacySharedUrl ? 1 : DEFAULT_STATE.roastEngine;
+  const legacySharedUrl = !daily && !params.has("e") && params.has("r");
+  const roastEngine = daily ? 2 : parsedEngine === 1 ? 1 : parsedEngine === 2 ? 2 : legacySharedUrl ? 1 : DEFAULT_STATE.roastEngine;
   let roastMode = requestedMode;
 
   if (requestedMode === 4 && !has18Confirmation()) {
@@ -68,13 +73,15 @@ function readStateFromUrl() {
   }
 
   const pool = roastsForState(character, { level: roastMode, health, engine: roastEngine });
-  const defaultRoastIndex = roastEngine === 1 && roastMode === DEFAULT_STATE.roastMode
-    ? Math.min(character.roasts.length - 1, pool.length - 1)
-    : 0;
+  const defaultRoastIndex = daily
+    ? Math.min(daily.roastIndex, pool.length - 1)
+    : roastEngine === 1 && roastMode === DEFAULT_STATE.roastMode
+      ? Math.min(character.roasts.length - 1, pool.length - 1)
+      : 0;
   const roastIndex = Number.isInteger(requestedRoast) && requestedRoast >= 0 && requestedRoast < pool.length
     ? requestedRoast
     : defaultRoastIndex;
-  return { characterId, health, roastMode, roastIndex, roastEngine };
+  return { characterId, health, roastMode, roastIndex, roastEngine, dailyKey: daily?.key || null };
 }
 
 const state = readStateFromUrl();
@@ -91,6 +98,11 @@ let exportRenderToken = 0;
 let exportTimer = null;
 
 function currentCharacter() { return characters[state.characterId] || characters.somchai; }
+function currentDailyChallenge() {
+  return state.dailyKey ? dailyChallenge.generate(state.dailyKey) : null;
+}
+function todayDailyChallenge() { return dailyChallenge.generate(); }
+function clearDailyContext() { state.dailyKey = null; }
 function currentRoasts() {
   return roastsForState(currentCharacter(), {
     level: state.roastMode,
@@ -116,11 +128,21 @@ function qsa(selector) { return [...document.querySelectorAll(selector)]; }
 function buildShareUrl({ preserveOtherParams = false } = {}) {
   const url = new URL(window.location.href);
   if (!preserveOtherParams) url.search = "";
-  url.searchParams.set("c", state.characterId);
-  url.searchParams.set("h", String(state.health));
-  url.searchParams.set("m", String(state.roastMode));
-  url.searchParams.set("r", String(state.roastIndex));
-  url.searchParams.set("e", String(state.roastEngine));
+  if (state.dailyKey) {
+    url.searchParams.delete("c");
+    url.searchParams.delete("h");
+    url.searchParams.delete("m");
+    url.searchParams.set("d", state.dailyKey);
+    url.searchParams.set("r", String(state.roastIndex));
+    url.searchParams.set("e", "2");
+  } else {
+    url.searchParams.delete("d");
+    url.searchParams.set("c", state.characterId);
+    url.searchParams.set("h", String(state.health));
+    url.searchParams.set("m", String(state.roastMode));
+    url.searchParams.set("r", String(state.roastIndex));
+    url.searchParams.set("e", String(state.roastEngine));
+  }
   url.hash = "";
   return url.toString();
 }
@@ -151,6 +173,20 @@ function renderUI() {
   });
   const modeMeta = roastModes.modes[String(state.roastMode)];
   qsa("[data-roast-mode-description]").forEach(el => { el.textContent = modeMeta.description; });
+  const today = todayDailyChallenge();
+  const activeDaily = currentDailyChallenge();
+  const shownDaily = activeDaily || today;
+  const dailyCharacter = characters[shownDaily.characterId];
+  const dailyMode = roastModes.modes[String(shownDaily.roastMode)];
+  qsa("[data-daily-label]").forEach(el => {
+    el.textContent = `🔥 ${activeDaily ? "DAILY DISASTER" : "PLAY DAILY DISASTER"} #${String(shownDaily.number).padStart(3, "0")}${activeDaily ? " · ACTIVE" : ""}`;
+  });
+  qsa("[data-daily-summary]").forEach(el => {
+    el.textContent = `${dailyCharacter.name} · Health ${shownDaily.health}% · ${dailyMode.shortLabel}`;
+  });
+  qsa('[data-action="daily-challenge"]').forEach(button => {
+    button.setAttribute("aria-pressed", String(Boolean(activeDaily)));
+  });
   qsa("[data-owner-skill-value]").forEach(el => { el.textContent = ownerSkillText; });
   qsa("[data-owner-skill-bar]").forEach(el => { el.style.width = ownerSkillText; });
   qsa("[data-health-value]").forEach(el => { el.textContent = healthText; });
@@ -161,7 +197,11 @@ function renderUI() {
   qsa("[data-roast]").forEach(el => { el.textContent = `“${currentRoast()}”`; });
   qsa("[data-plant-svg]").forEach(svg => renderer.render(svg, state.health));
 
-  qsa("[data-export-summary]").forEach(el => { el.textContent = `${character.name} · Health ${healthText} · ${condition.title}`; });
+  qsa("[data-export-summary]").forEach(el => {
+    const daily = currentDailyChallenge();
+    const prefix = daily ? `Daily #${String(daily.number).padStart(3, "0")} · ` : "";
+    el.textContent = `${prefix}${character.name} · Health ${healthText} · ${condition.title}`;
+  });
   if (activeExportLab && !activeExportLab.hidden) scheduleExportRender();
 }
 
@@ -173,6 +213,7 @@ function adoptHealthAwareEngine(preferredIndex = state.roastIndex) {
 }
 
 function setHealth(value) {
+  clearDailyContext();
   state.health = Math.max(0, Math.min(100, Number(value)));
   adoptHealthAwareEngine();
   state.roastIndex = Math.min(state.roastIndex, currentRoasts().length - 1);
@@ -182,6 +223,7 @@ function setHealth(value) {
 
 function setCharacter(characterId) {
   if (!characters[characterId] || characterId === state.characterId) return;
+  clearDailyContext();
   state.characterId = characterId;
   adoptHealthAwareEngine();
   state.roastIndex = Math.min(state.roastIndex, currentRoasts().length - 1);
@@ -190,7 +232,8 @@ function setCharacter(characterId) {
   renderUI();
 }
 
-function applyRoastMode(level, preferredIndex = state.roastIndex, { preserveEngine = false } = {}) {
+function applyRoastMode(level, preferredIndex = state.roastIndex, { preserveEngine = false, preserveDaily = false } = {}) {
+  if (!preserveDaily) clearDailyContext();
   if (!preserveEngine) state.roastEngine = 2;
   state.roastMode = level;
   const roasts = currentRoasts();
@@ -209,6 +252,20 @@ function requestRoastMode(level) {
     return;
   }
   applyRoastMode(level);
+}
+
+function applyDailyChallenge(key = dailyChallenge.dateKey()) {
+  const daily = dailyChallenge.generate(key);
+  state.dailyKey = daily.key;
+  state.characterId = daily.characterId;
+  state.health = daily.health;
+  state.roastMode = daily.roastMode;
+  state.roastEngine = 2;
+  const pool = currentRoasts();
+  state.roastIndex = Math.min(daily.roastIndex, pool.length - 1);
+  latestExportBlob = null;
+  syncStateToUrl();
+  renderUI();
 }
 
 function nextRoast() {
@@ -440,6 +497,12 @@ async function renderExportCard() {
   ctx.fillStyle = "rgba(23,59,42,.09)";
   ctx.font = '950 72px system-ui,-apple-system,sans-serif';
   ctx.fillText("555", 966, 128);
+  const daily = currentDailyChallenge();
+  if (daily) {
+    ctx.fillStyle = "#c84b31";
+    ctx.font = '900 22px system-ui,-apple-system,"Segoe UI",sans-serif';
+    ctx.fillText(`🔥 DAILY #${String(daily.number).padStart(3, "0")}`, 966, 174);
+  }
 
   ctx.textAlign = "left";
   ctx.fillStyle = "#173b2a";
@@ -533,7 +596,10 @@ async function saveExport() {
     return;
   }
   const character = currentCharacter();
-  const filename = `ungrow-${character.id}-health-${state.health}.png`;
+  const daily = currentDailyChallenge();
+  const filename = daily
+    ? `ungrow-daily-${String(daily.number).padStart(3, "0")}-${character.id}.png`
+    : `ungrow-${character.id}-health-${state.health}.png`;
   const file = new File([latestExportBlob], filename, { type: "image/png" });
 
   if (supportsFileShare()) {
@@ -585,8 +651,13 @@ async function shareStateLink() {
   syncStateToUrl();
   const character = currentCharacter();
   const url = buildShareUrl();
-  const title = `Ungrow — ${character.name}`;
-  const text = `${character.name} · Plant Health ${state.health}% · ${currentRoast()}`;
+  const daily = currentDailyChallenge();
+  const title = daily
+    ? `Ungrow Daily Disaster #${String(daily.number).padStart(3, "0")}`
+    : `Ungrow — ${character.name}`;
+  const text = daily
+    ? `${character.name} · Health ${state.health}% · ${currentRoast()}`
+    : `${character.name} · Plant Health ${state.health}% · ${currentRoast()}`;
 
   if (navigator.share) {
     try {
@@ -660,6 +731,7 @@ qsa('[data-action="roast"]').forEach(button => button.addEventListener("click", 
 qsa('[data-action="shame"]').forEach(button => button.addEventListener("click", showExportLab));
 qsa('[data-action="save-export"]').forEach(button => button.addEventListener("click", saveExport));
 qsa('[data-action="share-link"]').forEach(button => button.addEventListener("click", shareStateLink));
+qsa('[data-action="daily-challenge"]').forEach(button => button.addEventListener("click", () => applyDailyChallenge()));
 qsa('[data-action="age-cancel"]').forEach(button => button.addEventListener("click", cancelAgeGate));
 qsa('[data-action="age-confirm"]').forEach(button => button.addEventListener("click", confirmAgeGate));
 document.querySelector("#ageGateCheck")?.addEventListener("change", event => {
