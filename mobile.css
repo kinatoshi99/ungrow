@@ -1,0 +1,274 @@
+@media (max-width: 700px) {
+  html, body {
+    width: 100%;
+    max-width: 100%;
+    overflow-x: hidden;
+  }
+
+  body {
+    background: var(--paper);
+  }
+
+  .app-shell {
+    display: block;
+    width: 100%;
+    min-height: 100vh;
+    padding: 8px;
+  }
+
+  .card {
+    width: 100%;
+    max-width: 100%;
+    padding: 16px;
+    border-radius: 18px;
+    box-shadow: 4px 4px 0 var(--ink);
+    overflow: hidden;
+  }
+
+  .card::after {
+    top: 10px;
+    right: -6px;
+    font-size: 52px;
+  }
+
+  .eyebrow {
+    font-size: 10px;
+  }
+
+  h1 {
+    margin-top: 8px;
+    font-size: clamp(42px, 15vw, 62px);
+    line-height: .88;
+  }
+
+  h1 span {
+    font-size: .58em;
+  }
+
+  .tagline {
+    margin-bottom: 8px;
+    font-size: 12px;
+  }
+
+  .plant {
+    width: 220px;
+    height: 225px;
+    transform: scale(.82);
+    transform-origin: center bottom;
+    margin: -18px auto -14px;
+  }
+
+  .profile {
+    grid-template-columns: 1fr;
+    gap: 10px;
+    padding: 14px;
+    border-radius: 14px;
+  }
+
+  .label { font-size: 17px; }
+  .sub { font-size: 10px; }
+
+  blockquote {
+    min-height: 0;
+    margin: 20px 0 14px;
+    font-size: clamp(20px, 6.2vw, 26px);
+  }
+
+  .actions {
+    grid-template-columns: 1fr;
+    gap: 10px;
+  }
+
+  button {
+    padding: 14px 16px;
+    border-radius: 14px;
+    font-size: 15px;
+    box-shadow: 0 4px 0 var(--ink);
+  }
+
+  .shame-button {
+    box-shadow: 0 4px 0 #0b2117;
+  }
+
+  .hint {
+    margin: 10px 0 0;
+    font-size: 10px;
+    line-height: 1.45;
+  }
+
+  .share-panel {
+    width: 100%;
+    min-width: 0;
+    margin-top: 22px;
+    padding-top: 18px;
+  }
+
+  .share-heading {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 10px;
+    margin-bottom: 12px;
+  }
+
+  .share-heading h2 {
+    margin-top: 2px;
+    font-size: 20px;
+    line-height: 1.15;
+  }
+
+  .download-button {
+    width: 100%;
+    padding: 13px 14px;
+    font-size: 13px;
+  }
+
+  .damage-control {
+    width: 100%;
+    min-width: 0;
+    padding: 14px;
+    margin-bottom: 14px;
+    border-radius: 14px;
+  }
+
+  .damage-label {
+    align-items: center;
+    font-size: 12px;
+  }
+
+  .damage-label strong {
+    font-size: 22px;
+  }
+
+  #healthSlider {
+    margin: 14px 0 6px;
+  }
+
+  .damage-caption {
+    font-size: 10px;
+    line-height: 1.5;
+  }
+
+  .social-card-dom {
+    width: 100%;
+    min-width: 0;
+    min-height: 0;
+    aspect-ratio: auto;
+    padding: 16px;
+    border-radius: 18px;
+    overflow: hidden;
+  }
+
+  .social-card-top {
+    font-size: 9px;
+  }
+
+  .social-card-555 {
+    font-size: 22px;
+  }
+
+  .social-card-title {
+    margin-top: 6px;
+    font-size: clamp(36px, 13vw, 50px);
+    line-height: .94;
+    overflow-wrap: anywhere;
+  }
+
+  .social-card-sub {
+    margin-top: 4px;
+    font-size: 10px;
+  }
+
+  .shame-visual {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-start;
+    width: 100%;
+    min-height: 0;
+    gap: 0;
+    margin: 4px 0 8px;
+    overflow: visible;
+  }
+
+  .shame-plant {
+    width: 210px;
+    height: 250px;
+    flex: 0 0 auto;
+    justify-self: auto;
+    transform: scale(.72);
+    transform-origin: center center;
+    margin: -26px auto -40px;
+  }
+
+  .condition-copy {
+    width: 100%;
+    margin: 0 0 10px;
+    text-align: center;
+  }
+
+  .condition-copy strong {
+    font-size: 18px;
+    line-height: 1.1;
+  }
+
+  .condition-copy span {
+    max-width: 280px;
+    margin: 6px auto 0;
+    font-size: 10px;
+  }
+
+  .social-stats {
+    padding: 12px;
+    border-radius: 12px;
+  }
+
+  .social-stat-row {
+    font-size: 10px;
+  }
+
+  .social-roast {
+    min-height: 92px;
+    margin-top: 10px;
+    padding: 14px;
+    border-radius: 14px;
+    font-size: clamp(17px, 5.5vw, 22px);
+  }
+
+  .social-award {
+    margin-top: 12px;
+    font-size: 9px;
+  }
+
+  .social-tags,
+  .social-source {
+    margin-top: 6px;
+    font-size: 7px;
+    overflow-wrap: anywhere;
+  }
+
+  .social-card-dom::after {
+    right: 12px;
+    bottom: 8px;
+    font-size: 48px;
+  }
+
+  footer {
+    flex-direction: column;
+    gap: 6px;
+    margin-top: 20px;
+    padding-top: 12px;
+    font-size: 9px;
+  }
+}
+
+@media (max-width: 390px) {
+  .app-shell { padding: 5px; }
+  .card { padding: 13px; border-radius: 16px; }
+  h1 { font-size: clamp(38px, 14vw, 52px); }
+  .plant { transform: scale(.76); margin-top: -25px; margin-bottom: -22px; }
+  .social-card-dom { padding: 13px; }
+  .social-card-title { font-size: 34px; }
+  .shame-plant { transform: scale(.66); margin-top: -32px; margin-bottom: -48px; }
+  .condition-copy strong { font-size: 16px; }
+  .social-roast { font-size: 17px; }
+}
