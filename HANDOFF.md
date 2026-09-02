@@ -1,19 +1,17 @@
 # Ungrow handoff — 2026-09-03 (Asia/Bangkok)
 
-## Latest work: text-matched memes on SHAME ME cards
+## Latest work: original intent-aware meme reaction system
 
-The user asked for famous meme images that fit the roast text. Added five authentic templates: Success Kid, Futurama Fry, Math Lady, This Is Fine, and Disaster Girl. `memes.js` prioritizes punchline phrases (including negation/sarcasm), with the existing Health tone as fallback. No random selection or extra URL state: restored roast + Health reproduce the meme.
+The latest request replaced the previously bundled famous internet memes with original local reaction stickers. `memes.js` now maps the existing Health intent (`praise`, `sideEye`, `concerned`, `hard`, `disaster`) to three original SVG stickers per intent, 15 total. Selection is deterministic from character, Roast Mode, roast index, and Daily key, so shared URLs and Daily challenges reproduce the same reaction without new URL state.
 
-- `assets/memes/`: five original downloaded files, about 309 KiB total. `SOURCES.md` records source pages/downloads; these third-party images are excluded from the MIT code license.
-- `social-card.js`: plant and tilted meme photo side by side, compact three-column stats, unchanged full-width complete roast. Both This Is Fine panels remain visible.
-- `app.js`: selected meme loads alongside the SVG before Canvas rendering; same-origin asset cache, 10-second timeout/retry, current snapshot/token protections and descriptive accessible canvas label.
-- `index.html`: new meme module and `meme1` cache keys.
-- Tests: 24 passing, including phrase alignment/negation, 240 current/legacy selections, local assets, cache/error/timeout/retry, Daily URL restoration and an out-of-order image-load export race. Syntax, whitespace, and Impeccable detector checks passed.
-- Local Canvas QA: six SOMCHAI/PLOY cases cover all five memes and light/dark cards; all 240 full roast texts fit without truncation. A spacing correction moved photos clear of the stats divider.
+- `assets/memes/`: 15 original SVG stickers in five intent folders; the previous third-party JPG/WEBP assets and source-attribution file were removed.
+- `memes.js`: intent resolver, deterministic selector, same-origin cached loader, timeout/retry behavior.
+- `app.js`: one `currentMeme()` resolver feeds both Mobile/Desktop preview and export. Speech behavior, Daily scoping, share URLs, 18+ gate, and stale-render protection remain intact.
+- `social-card.js`: the bold poster is preserved; the meme is now a smaller supporting reaction sticker in the right-side gutter rather than a dominant reaction photo.
+- `index.html` / CSS: compact meme preview added without moving the existing controls; cache keys bumped.
+- `tests/memes.test.cjs`: validates five intent bands, 15 local original assets, deterministic shared/Daily selection, and loader retry/cache behavior. Existing Daily and speech integration tests still pass.
 
-Published implementation commit `b390b2864d220852a7533f6d6543fdd5010c8bde`; GitHub Pages run `33673926855` completed successfully. Final six-card contact sheet confirmed that reaction frames clear the stats divider. Public-browser SHAME ME verification generated PLOY's Health 50% card with “จริงหรือเค้กคะที่บอกว่าดิฉันยังโอเค”, selected This Is Fine, set the descriptive canvas label, and enabled DOWNLOAD PNG after encoding. Actual downloaded-file receipt and native iPhone share sheets were not verified. No implementation work remains.
-
-Before new work, fetch `main` and run `node --test tests/*.test.cjs`. The repository is `/workspace/scratch/5fafc8f63c3e/ungrow`; public site `https://kinatoshi99.github.io/ungrow/`. Existing iPhone speech limitations below still apply.
+Validation target before publish: `node --test tests/*.test.cjs`, Mobile 375/390/430 + Desktop 1440 visual QA, all 15 assets load, Export PNG contains the same sticker as the page preview, and Impeccable reports no findings.
 
 ## Previous work: tap-to-read Thai roasts
 

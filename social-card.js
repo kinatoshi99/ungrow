@@ -119,23 +119,14 @@
   }
 
   function drawMeme(ctx, meme, image) {
-    const [sx, sy, sw, sh] = meme.crop || [0, 0, image.naturalWidth || image.width, image.naturalHeight || image.height];
-    const scale = Math.min(440 / sw, 326 / sh);
-    const width = sw * scale, height = sh * scale;
+    const size = 210;
     ctx.save();
-    ctx.translate(784, 565);
+    ctx.translate(825, 565);
     ctx.rotate(-3 * Math.PI / 180);
-    const left = -width / 2 - 14, top = -height / 2 - 14;
-    // A pasted reaction photo; keep the complete two-panel This Is Fine intact.
-    ctx.fillStyle = INK;
-    ctx.fillRect(left + 9, top + 12, width + 28, height + 92);
-    ctx.fillStyle = PAPER;
-    ctx.fillRect(left, top, width + 28, height + 92);
-    ctx.drawImage(image, sx, sy, sw, sh, -width / 2, -height / 2, width, height);
-    ctx.fillStyle = INK;
-    fitText(ctx, meme.caption, { x: left + 12, y: height / 2 + 8, width: width + 4, height: 39, size: 29, weight: 900, center: true });
-    font(ctx, 17, 700);
-    ctx.fillText(meme.name, -ctx.measureText(meme.name).width / 2, height / 2 + 64);
+    ctx.shadowColor = "rgba(23,59,42,.18)";
+    ctx.shadowBlur = 16;
+    ctx.shadowOffsetY = 10;
+    ctx.drawImage(image, -size / 2, -size / 2, size, size);
     ctx.restore();
   }
 

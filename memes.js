@@ -1,30 +1,55 @@
-// Curated reactions: match the punchline first, then its health-aware tone.
+// Original local meme-style reaction stickers, selected by roast intent.
 (() => {
-  const catalog = Object.freeze(Object.fromEntries([
-    { id: "success-kid", name: "Success Kid", file: "success-kid.jpg", caption: "ให้ผ่านหนึ่งวัน", crop: [145, 150, 315, 315] },
-    { id: "fry", name: "Futurama Fry", file: "fry.jpg", caption: "ขอมองแรงแป๊บ", crop: [0, 177, 1000, 766] },
-    { id: "math-lady", name: "Math Lady", file: "math-lady.jpg", caption: "กำลังประมวลผล…" },
-    { id: "this-is-fine", name: "This Is Fine", file: "this-is-fine.webp", caption: "ทุกอย่างโอเคแหละ…" },
-    { id: "disaster-girl", name: "Disaster Girl", file: "disaster-girl.jpg", caption: "ผลงานใครก่อน" }
-  ].map(meme => [meme.id, Object.freeze({ ...meme, crop: meme.crop && Object.freeze(meme.crop), src: `assets/memes/${meme.file}` })])));
+  const entries = [
+    ["praise", "slay", "Slay", "Original slay diva reaction sticker"],
+    ["praise", "slow-clap", "Slow Clap", "Original reluctant slow clap reaction sticker"],
+    ["praise", "shocked-praise", "Shocked Praise", "Original surprised praise reaction sticker"],
+    ["sideEye", "side-eye", "Side Eye", "Original suspicious side-eye reaction sticker"],
+    ["sideEye", "caught-you", "Caught You", "Original caught-you reaction sticker"],
+    ["sideEye", "fake-smile", "Fake Smile", "Original polite fake-smile reaction sticker"],
+    ["concerned", "headache", "Headache", "Original headache reaction sticker"],
+    ["concerned", "nervous-sweat", "Nervous Sweat", "Original nervous-sweat reaction sticker"],
+    ["concerned", "emergency-meeting", "Emergency Meeting", "Original emergency-meeting reaction sticker"],
+    ["hard", "im-done", "I'm Done", "Original done-with-management reaction sticker"],
+    ["hard", "management-rant", "Management Rant", "Original angry management-rant reaction sticker"],
+    ["hard", "resignation", "Resignation", "Original resignation-letter reaction sticker"],
+    ["disaster", "funeral", "Funeral", "Original comedic memorial reaction sticker"],
+    ["disaster", "chaos", "Chaos", "Original everything-is-chaos reaction sticker"],
+    ["disaster", "final-boss", "Final Boss", "Original final-boss disaster reaction sticker"]
+  ];
+  const catalog = Object.freeze(Object.fromEntries(entries.map(([intent,id,name,alt]) => [id, Object.freeze({
+    id, intent, name, alt, src: `assets/memes/${intent}/${id}.svg`
+  })])));
+  const pools = Object.freeze(Object.fromEntries(["praise","sideEye","concerned","hard","disaster"].map(intent => [
+    intent, Object.freeze(Object.values(catalog).filter(meme => meme.intent === intent))
+  ])));
 
-  function select({ roast = "", health = 50 } = {}) {
-    const text = String(roast).toLowerCase();
-    let id;
-    // Whole phrases take priority: negated praise/criticism is not literal.
-    if (/จริงหรือเค้ก|ที่บอกว่า.*(?:ปกติ|โอเค)|ยังจะ.*(?:ปกติ|สบายดี)|ยัง(?:ถาม|เรียก).*?(?:โอเค|ปกติ|สบายดี)/.test(text)) id = "this-is-fine";
-    else if (/ทำถึงเรื่องพัง|พินาศ|ระยำ|บูดทั้งชุด|บูดมาก|เซ๊ะตุ้มเล้ง|final boss|ยับ|ลาโลก|จะตาย|วิกฤต/.test(text)) id = "disaster-girl";
-    else if (/ดูแลดี|ทำดีนะ|รอบนี้เก่ง|เก่งจริง|วันนี้เก่ง|ด่าไม่ลง|เตรียมด่าไว้เก้อ|ไม่มี(?:ใบคำ|เรื่อง)ร้องเรียน|ขอชม|มอบดาว|รอบนี้.*ดีจริง|ไม่บ้งสักนิด|ไม่ใช่แค่ confidence|side-eye ไว้แล้วแต่ไม่ได้ใช้/.test(text)) id = "success-kid";
-    else if (/เดา|ทดลอง|beta test|สูตร|คำนวณ|คณิต|งง|แผน/.test(text)) id = "math-lady";
-    else if (/side-eye|มองแรง|red flag|ไม่ไว้ใจ|confidence|อย่าเพิ่ง|หยุดมั่น|npc|mid|เครดิตเต็ม/.test(text)) id = "fry";
-    else if (/ยังไม่(?:ชิบหาย|พัง|บ้ง)|ยังพอรอด|ยังพอไหว|ยังรอด|ยังไหว/.test(text)) id = health < 40 ? "this-is-fine" : "fry";
-    else if (/ชิบหาย|พัง|บ้ง|หมดหลอด|ลาออก|icu|บูด|อ่อมหนัก/.test(text)) id = "disaster-girl";
-    else id = health >= 80 ? "success-kid" : health >= 60 ? "fry" : health >= 40 ? "math-lady" : health >= 20 ? "this-is-fine" : "disaster-girl";
-    return catalog[id];
+  function intentFor(health = 50) {
+    const value = Math.max(0, Math.min(100, Number(health)));
+    if (value >= 80) return "praise";
+    if (value >= 60) return "sideEye";
+    if (value >= 40) return "concerned";
+    if (value >= 20) return "hard";
+    return "disaster";
   }
 
-  // Same-origin assets keep the exported canvas readable, even if a source
-  // website changes its CORS headers. Only the selected reaction is loaded.
+  function hash(text) {
+    let value = 2166136261;
+    for (const ch of String(text)) {
+      value ^= ch.codePointAt(0);
+      value = Math.imul(value, 16777619);
+    }
+    return value >>> 0;
+  }
+  function select({ health = 50, character, characterId, roastMode = 2, roastIndex = 0, daily, dailyKey } = {}) {
+    const intent = intentFor(health);
+    const pool = pools[intent];
+    const id = character?.id || characterId || "somchai";
+    const day = daily?.key || dailyKey || "";
+    const seed = [intent, id, roastMode, roastIndex, day].join("|");
+    return pool[hash(seed) % pool.length];
+  }
+
   function createImageLoader({ makeImage = () => new Image(), setTimer = setTimeout, clearTimer = clearTimeout } = {}) {
     const cache = new Map();
     return function load(meme) {
@@ -48,5 +73,12 @@
     };
   }
 
-  window.UngrowMemes = Object.freeze({ catalog, select, createImageLoader });
+  window.UngrowMemes = Object.freeze({
+    catalog,
+    pools,
+    count: entries.length,
+    intentFor,
+    select,
+    createImageLoader
+  });
 })();

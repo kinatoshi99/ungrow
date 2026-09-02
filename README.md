@@ -62,8 +62,8 @@ plant-svg.js        # SOMCHAI SVG renderer + health states
 ploy-svg.js         # PLOY Peace Lily SVG renderer + health states
 app.js              # Character-aware shared state, interactions, PNG/share logic
 social-card.js       # Poster layout, health palette/stamp, and complete Thai text fitting
-memes.js             # Curated text-to-reaction rules and cached same-origin image loading
-assets/memes/        # Five bundled reaction images with source attribution
+memes.js             # Intent-aware deterministic reaction sticker resolver + image cache
+assets/memes/        # 15 original local SVG reaction stickers (3 per intent)
 speech.js            # Device Thai speech, voice availability, cancellation, and error handling
 ```
 
@@ -104,19 +104,18 @@ Good first contribution ideas:
 - `v0.0.3` — Roast modes + 50-entry slang bank + 18+ gate + shareable `m=` state ✅
 - `v0.0.4` — Health-aware roast engine (5 intents × 4 modes × 2 characters) ✅
 - `v0.0.5` — Daily Disaster Challenge ✅
-- `v0.0.6` — Third plant character / easier community contributions
+- `v0.0.6` — Intent-aware meme reaction system (15 original stickers) ✅
+- `v0.0.7` — Third plant character / easier community contributions
 
 ## License
 
-Original code: MIT. Third-party meme images retain their respective rights; see [image sources](assets/memes/SOURCES.md).
+Code and bundled original reaction sticker assets: MIT.
 
-## Memes on SHAME ME cards
+## Meme reactions on SHAME ME cards
 
-Opening SHAME ME pairs the current roast with Success Kid, Futurama Fry, Math Lady, This Is Fine, or Disaster Girl. Phrase matching takes priority over the Health fallback: genuine praise gets Success Kid, guessing/experiments get Math Lady, skeptical side-eye gets Fry, denial gets This Is Fine, and disastrous results get Disaster Girl. For example, “ทำถึงเรื่องพัง” gets Disaster Girl while “ไม่บ้งสักนิด” gets Success Kid.
+Ungrow now uses 15 original local SVG reaction stickers instead of third-party internet memes. The existing Health intent selects the reaction family: `praise`, `sideEye`, `concerned`, `hard`, or `disaster`, with three sticker variants per intent.
 
-The mapping is curated and deterministic, not an AI classifier. The same restored roast and Health select the same image, including Daily and legacy links, without extra URL state. Meme names appear on the card and in the accessible preview label. Images are loaded only when exporting and cached for subsequent cards. A failed or timed-out image load offers a retry; a slow older load cannot overwrite a newer PNG.
-
-All five templates are served from the app's own origin so PNG export does not depend on third-party CORS headers. [Source links and image attribution](assets/memes/SOURCES.md) are recorded beside the assets.
+Selection is deterministic from intent, character, Roast Mode, roast index, and Daily key. The same restored share URL or Daily challenge therefore reproduces the same sticker without adding URL state. The main Mobile/Desktop UI and the 1080×1350 SHAME ME canvas use the same resolver. Sticker loading remains same-origin, cached, timeout-safe, retryable, and protected from stale export races.
 
 ## Daily Disaster Challenge
 

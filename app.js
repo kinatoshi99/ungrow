@@ -119,6 +119,15 @@ function currentAward() {
   const awards = currentCharacter().awardLines;
   return awards[state.roastIndex % awards.length];
 }
+function currentMeme() {
+  return window.UngrowMemes.select({
+    health: state.health,
+    character: currentCharacter(),
+    roastMode: state.roastMode,
+    roastIndex: state.roastIndex,
+    daily: currentDailyChallenge()
+  });
+}
 function currentPlantRenderer() { return plantRenderers[currentCharacter().rendererId] || plantRenderers.somchai; }
 function getCondition(health = state.health) {
   const conditions = currentCharacter().conditions;
@@ -209,6 +218,15 @@ function renderUI() {
   qsa("[data-condition-sub]").forEach(el => { el.textContent = condition.sub; });
   qsa("[data-roast]").forEach(el => { el.textContent = `“${currentRoast()}”`; });
   qsa("[data-plant-svg]").forEach(svg => renderer.render(svg, state.health));
+  const meme = currentMeme();
+  qsa("[data-meme-preview]").forEach(img => {
+    img.hidden = !meme;
+    if (!meme) return;
+    if (img.src !== meme.src) img.src = meme.src;
+    img.alt = meme.alt;
+    img.dataset.memeId = meme.id;
+    img.dataset.memeIntent = meme.intent;
+  });
 
   qsa("[data-export-summary]").forEach(el => {
     const daily = currentDailyChallenge();
@@ -357,9 +375,10 @@ async function renderExportCard() {
   const health = state.health;
   const card = {
     character, health, condition: getCondition(), roast: currentRoast(),
-    award: currentAward(), daily: currentDailyChallenge()
+    award: currentAward(), daily: currentDailyChallenge(),
+    roastMode: state.roastMode, roastIndex: state.roastIndex
   };
-  const meme = window.UngrowMemes.select(card);
+  const meme = currentMeme();
   latestExportBlob = null;
   setExportButtons(true, "⏳ กำลังทำการ์ด...");
   setExportStatus("กำลังเตรียมการ์ดประจาน...");

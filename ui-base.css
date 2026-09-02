@@ -17,3 +17,4 @@
 .speech-status{margin:0;max-width:42ch;font-size:14px;line-height:1.5;color:var(--ink)}
 .speech-status:empty{display:none}
 @media(max-width:767px){.mobile-roast-card .roast-audio{margin-top:0;justify-items:stretch}.mobile-roast-card .speak-btn{width:100%}}
+.meme-reaction-preview{display:flex;justify-content:flex-end;align-items:center;min-height:78px;margin-top:8px;pointer-events:none}.meme-reaction-preview img{display:block;width:78px;height:78px;object-fit:contain;filter:drop-shadow(0 7px 7px rgba(23,59,42,.14));transform:rotate(-2deg);transform-origin:center}.meme-reaction-preview img[hidden]{display:none}

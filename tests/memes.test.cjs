@@ -8,53 +8,47 @@ const context = vm.createContext({ window: {}, setTimeout, clearTimeout });
 vm.runInContext(fs.readFileSync(path.join(root, "memes.js"), "utf8"), context);
 const memes = context.window.UngrowMemes;
 
-test("reactions follow the punchline, including sarcasm and negation, at the same Health", () => {
-  const cases = [
-    ["วันนี้มึงทำดีนะ กูเขียวจนหาเรื่องด่าไม่ลง", "success-kid"],
-    ["ทำถึงเรื่องพังแล้ว ช่วยทำถึงเรื่องแก้บ้าง", "disaster-girl"],
-    ["จริงหรือเค้กคะที่บอกว่าดิฉันยังโอเค", "this-is-fine"],
-    ["ดิฉันแทบลาโลกแล้วค่ะ ยังจะเรียกว่าปกติอีกเหรอคะ", "this-is-fine"],
-    ["สุขภาพต่ำแล้วครับ กรุณาหยุดเดาและเริ่มแก้ปัญหา", "math-lady"],
-    ["คุณน้าคะ ยังสวยอยู่ แต่ดิฉันเริ่มมี side-eye แล้ว", "fry"],
-    ["Owner Skill มีของนะคะ รอบนี้ไม่บ้งสักนิด", "success-kid"],
-    ["ทำถึงค่ะ ดิฉันเตรียม side-eye ไว้แล้วแต่ไม่ได้ใช้", "success-kid"],
-    ["จึ้งอยู่ รอบนี้เจ้าของมีของจริงไม่ใช่แค่ Confidence", "success-kid"],
-    ["ยังไม่ชิบหายครับ แต่แม่งเริ่มเสียวแล้วนะ", "fry"]
-  ];
-  for (const [roast, expected] of cases) assert.equal(memes.select({ roast, health: 65 }).id, expected, roast);
+test("health bands select the matching meme intent", () => {
+  const cases = [[89,"praise"],[70,"sideEye"],[50,"concerned"],[30,"hard"],[10,"disaster"]];
+  for (const [health, intent] of cases) {
+    const meme = memes.select({ health, characterId: "somchai", roastMode: 2, roastIndex: 1 });
+    assert.equal(memes.intentFor(health), intent);
+    assert.equal(meme.intent, intent);
+    assert.ok(memes.pools[intent].some(item => item.id === meme.id));
+  }
 });
-
-test("unmatched wording uses tone; every selected asset is bundled under the app", () => {
-  for (const [health, id] of [[100,"success-kid"],[65,"fry"],[50,"math-lady"],[30,"this-is-fine"],[0,"disaster-girl"]]) {
-    assert.equal(memes.select({ roast: "", health }).id, id);
+test("catalog contains 15 bundled original SVG stickers, three per intent", () => {
+  assert.equal(memes.count, 15);
+  for (const intent of ["praise","sideEye","concerned","hard","disaster"]) {
+    assert.equal(memes.pools[intent].length, 3, intent);
   }
   for (const meme of Object.values(memes.catalog)) {
-    assert.match(meme.src, /^assets\/memes\/[\w-]+\.(jpg|webp)$/);
-    assert.ok(fs.statSync(path.join(root, meme.src)).size > 1000, meme.src);
+    assert.match(meme.src, /^assets\/memes\/(praise|sideEye|concerned|hard|disaster)\/[\w-]+\.svg$/);
+    assert.ok(fs.statSync(path.join(root, meme.src)).size > 300, meme.src);
+    assert.match(meme.alt, /^Original /);
   }
 });
 
-test("all current and legacy roasts select reproducibly without randomness", () => {
-  for (const file of ["characters.js", "roast-matrix.js", "roast-modes.js"]) vm.runInContext(fs.readFileSync(path.join(root, file), "utf8"), context);
-  for (const [id, character] of Object.entries(context.window.UngrowCharacters)) {
-    const quotes = [...Object.values(context.window.UngrowRoastMatrix.matrix[id]).flatMap(m => Object.values(m).flat()), ...character.roasts, ...[1,2,3,4].flatMap(l => context.window.UngrowRoastModes.examplesFor(id,l))];
-    for (const roast of quotes) {
-      const state = { roast, health: 50 };
-      assert.equal(memes.select(state), memes.select(JSON.parse(JSON.stringify(state))));
-      assert.ok(memes.select(state).name);
-    }
+test("selection is deterministic for shared and Daily state", () => {
+  const states = [
+    { health: 89, characterId: "somchai", roastMode: 2, roastIndex: 0 },
+    { health: 70, characterId: "ploy", roastMode: 3, roastIndex: 2 },
+    { health: 30, characterId: "somchai", roastMode: 1, roastIndex: 1, dailyKey: "2026-09-03" },
+    { health: 10, character: { id: "ploy" }, roastMode: 2, roastIndex: 2, daily: { key: "2026-09-04" } }
+  ];
+  for (const state of states) {
+    assert.equal(memes.select(state).id, memes.select(JSON.parse(JSON.stringify(state))).id);
   }
 });
-
 test("image loading deduplicates work, times out, and allows retry after failure", async () => {
   const images = [], timers = new Map();
   let nextTimer = 0;
   const load = memes.createImageLoader({
-    makeImage: () => { const image = { naturalWidth: 500 }; images.push(image); return image; },
+    makeImage: () => { const image = { naturalWidth: 200 }; images.push(image); return image; },
     setTimer: fn => { timers.set(++nextTimer, fn); return nextTimer; },
     clearTimer: id => timers.delete(id)
   });
-  const meme = memes.catalog.fry;
+  const meme = memes.catalog["side-eye"];
   const first = load(meme);
   assert.equal(load(meme), first);
   assert.equal(images[0].src, meme.src);
