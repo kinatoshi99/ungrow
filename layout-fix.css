@@ -1,0 +1,89 @@
+.artwork-frame {
+  display: grid;
+  place-items: center;
+  width: 100%;
+  min-width: 0;
+  min-height: 260px;
+  overflow: hidden;
+}
+
+.artwork-frame .shame-svg {
+  display: block;
+  width: min(100%, 250px);
+  height: auto;
+  max-width: 100%;
+  margin: 0 auto;
+}
+
+.condition-copy {
+  position: relative;
+  z-index: 5;
+  background: var(--paper);
+}
+
+@media (max-width: 700px) {
+  .shame-visual {
+    display: block !important;
+    width: 100%;
+    margin: 10px 0 0 !important;
+    overflow: hidden !important;
+  }
+
+  .artwork-frame {
+    height: 258px;
+    min-height: 258px;
+    max-height: 258px;
+    padding: 0 0 24px;
+    margin: 0;
+    overflow: hidden;
+  }
+
+  .artwork-frame .shame-svg {
+    width: 220px !important;
+    height: 220px !important;
+    min-width: 0;
+    flex: none;
+    margin: 0 auto !important;
+    overflow: hidden !important;
+  }
+
+  .condition-copy {
+    clear: both;
+    display: block;
+    width: 100%;
+    margin: 14px 0 16px !important;
+    padding: 12px 10px 10px !important;
+    background: var(--paper) !important;
+    text-align: center;
+    isolation: isolate;
+  }
+
+  .condition-copy strong,
+  .condition-copy span {
+    position: relative;
+    z-index: 2;
+  }
+
+  .social-stats {
+    clear: both;
+    margin-top: 0;
+  }
+}
+
+@media (max-width: 390px) {
+  .artwork-frame {
+    height: 232px;
+    min-height: 232px;
+    max-height: 232px;
+    padding-bottom: 22px;
+  }
+
+  .artwork-frame .shame-svg {
+    width: 198px !important;
+    height: 198px !important;
+  }
+
+  .condition-copy {
+    margin-top: 12px !important;
+  }
+}
