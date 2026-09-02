@@ -5,109 +5,127 @@
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
   <meta name="description" content="Ungrow v0.0.1 — SOMCHAI Roast Button. An anti-plant-care open source joke project." />
   <title>Ungrow v0.0.1 — SOMCHAI Roast Button</title>
-  <link rel="stylesheet" href="styles.css?v=iossave1" />
-  <link rel="stylesheet" href="svg-plant.css?v=iossave1" />
-  <link rel="stylesheet" href="mobile.css?v=iossave1" />
-  <link rel="stylesheet" href="layout-fix.css?v=iossave1" />
+  <link rel="stylesheet" href="ui-base.css?v=refactor1" />
+  <link rel="stylesheet" href="desktop-ui.css?v=refactor1" />
+  <link rel="stylesheet" href="mobile-ui-v2.css?v=refactor1" />
+  <link rel="stylesheet" href="export-card.css?v=refactor1" />
 </head>
 <body>
-  <main class="app-shell">
-    <section class="card" aria-labelledby="title">
-      <div class="eyebrow">🌱💀 UNGROW v0.0.1</div>
-      <h1 id="title">SOMCHAI<br><span>Roast Button</span></h1>
-      <p class="tagline">Anti-Plant Care Project<br><strong>Helping plants survive their owners.</strong></p>
-
-      <div class="plant" aria-hidden="true">
-        <div class="leaves">
-          <span class="leaf l1"></span><span class="leaf l2"></span><span class="leaf l3"></span>
-          <span class="leaf l4"></span><span class="leaf l5"></span>
-        </div>
-        <div class="face"><span class="eye"></span><span class="eye"></span><span class="mouth"></span></div>
-        <div class="pot">SOMCHAI<small>NOT IMPRESSED.</small></div>
-      </div>
-
-      <div class="profile">
-        <div>
-          <span class="label">🐍 SOMCHAI</span>
-          <span class="sub">Snake Plant · Stoic Introvert</span>
-        </div>
-        <div class="stats">
-          <span>Plant Health <b id="mainHealthValue">89%</b></span>
-          <div class="meter"><i id="mainHealthBar" style="width:89%"></i></div>
-          <span>Owner Skill <b>21%</b></span>
-          <div class="meter danger"><i style="width:21%"></i></div>
-        </div>
-      </div>
-
-      <blockquote id="roast" aria-live="polite">“รอดมาได้ไม่ใช่เพราะเจ้าของ<br>แต่เพราะพันธุกรรม”</blockquote>
-
-      <div class="actions">
-        <button id="roastButton" type="button">🔥 ROAST ME</button>
-        <button id="shameButton" class="shame-button" type="button">📸 SHAME ME</button>
-      </div>
-      <p class="hint">ROAST ให้สะใจก่อน แล้วกด SHAME ME เอาไปประจานตัวเอง 😂</p>
-
-      <section id="sharePanel" class="share-panel" hidden aria-live="polite">
-        <div class="share-heading">
-          <div>
-            <span class="share-kicker">SOCIAL CARD LAB</span>
-            <h2>ยิ่ง Health ต่ำ ยิ่งยับ 💀</h2>
-          </div>
-          <button id="downloadButton" class="download-button" type="button">⬇️ DOWNLOAD PNG</button>
-        </div>
-
-        <div class="damage-control">
-          <div class="damage-label">
-            <span>🧪 Plant Health Damage</span>
-            <strong id="healthReadout">89%</strong>
-          </div>
-          <input id="healthSlider" type="range" min="0" max="100" value="89" aria-label="Plant Health" />
-          <div class="damage-scale"><span>💀 0</span><span>50</span><span>100 🌱</span></div>
-          <p id="damageCaption" class="damage-caption">เริ่มช้ำใจ — มีแผลนิดหน่อย แต่ยังมีแรงด่าเจ้าของ</p>
-        </div>
-
-        <article id="socialCardDom" class="social-card-dom">
-          <div class="social-card-top">
-            <span>🌱💀 UNGROW v0.0.1</span>
-            <span class="social-card-555">555</span>
-          </div>
-          <div class="social-card-title">SOMCHAI</div>
-          <div class="social-card-sub">Snake Plant · Stoic Introvert</div>
-
-          <div class="shame-visual">
-            <div class="artwork-frame">
-              <svg id="shameSvg" class="shame-svg" viewBox="0 0 320 320" role="img" aria-label="SOMCHAI plant health illustration"></svg>
+  <main id="appRoot">
+    <section class="app-view desktop-view" aria-label="Ungrow desktop interface">
+      <div class="desktop-shell">
+        <div class="desktop-hero">
+          <div class="desktop-copy">
+            <div class="brand">🌱💀 UNGROW v0.0.1</div>
+            <h1 class="title">SOMCHAI<span>Roast Button</span></h1>
+            <p class="subtitle">Anti-Plant Care Project · Helping plants survive their owners.</p>
+            <div class="roast-box" data-roast>“รอดมาได้ไม่ใช่เพราะเจ้าของ แต่เพราะพันธุกรรม”</div>
+            <div class="actions">
+              <button class="action-btn" type="button" data-action="roast">🔥 ROAST ME</button>
+              <button class="action-btn secondary" type="button" data-action="shame">📸 SHAME ME</button>
             </div>
           </div>
 
-          <div class="condition-copy">
-            <strong id="conditionTitle">เริ่มช้ำใจ</strong>
-            <span id="conditionSub">มีแผลนิดหน่อย แต่ยังมีแรงด่าเจ้าของ</span>
+          <div class="desktop-panel">
+            <div class="desktop-plant-wrap">
+              <div class="plant-stage">
+                <svg data-plant-svg viewBox="0 0 320 320" role="img" aria-label="SOMCHAI plant health illustration"></svg>
+              </div>
+              <div class="condition">
+                <strong data-condition-title>เริ่มช้ำใจ</strong>
+                <span data-condition-sub>มีแผลนิดหน่อย แต่ยังมีแรงด่าเจ้าของ</span>
+              </div>
+            </div>
+
+            <div class="desktop-controls">
+              <div class="health-control">
+                <div class="health-control__top"><span>🧪 Plant Health</span><strong data-health-value>89%</strong></div>
+                <input type="range" min="0" max="100" value="89" data-health-slider aria-label="Plant Health" />
+                <div class="health-scale"><span>💀 0</span><span>50</span><span>100 🌱</span></div>
+              </div>
+              <div class="stats-card">
+                <div class="stat-row"><span>Plant Health</span><b data-health-value>89%</b></div>
+                <div class="meter"><i data-health-bar style="width:89%"></i></div>
+                <div class="stat-row"><span>Owner Skill</span><b>21%</b></div>
+                <div class="meter owner"><i style="width:21%"></i></div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <footer class="app-footer"><span>Desktop UI · Open Source · No AI · Just nonsense.</span><a href="https://github.com/kinatoshi99/ungrow" target="_blank" rel="noreferrer">GitHub ↗</a></footer>
+      </div>
+    </section>
+
+    <section class="app-view mobile-view" aria-label="Ungrow mobile interface">
+      <div class="mobile-shell">
+        <header class="mobile-head">
+          <div class="brand">🌱💀 UNGROW v0.0.1</div>
+          <h1 class="title">SOMCHAI<span>Roast Button</span></h1>
+          <p class="subtitle">Anti-Plant Care Project · มือถือเน้นเล่นไว แชร์ไว ยับไว</p>
+        </header>
+
+        <div class="mobile-plant-card">
+          <div class="plant-stage">
+            <svg data-plant-svg viewBox="0 0 320 320" role="img" aria-label="SOMCHAI plant health illustration"></svg>
+          </div>
+          <div class="condition">
+            <strong data-condition-title>เริ่มช้ำใจ</strong>
+            <span data-condition-sub>มีแผลนิดหน่อย แต่ยังมีแรงด่าเจ้าของ</span>
+          </div>
+        </div>
+
+        <div class="mobile-stack">
+          <div class="stats-card">
+            <div class="stat-row"><span>Plant Health</span><b data-health-value>89%</b></div>
+            <div class="meter"><i data-health-bar style="width:89%"></i></div>
+            <div class="stat-row"><span>Owner Skill</span><b>21%</b></div>
+            <div class="meter owner"><i style="width:21%"></i></div>
           </div>
 
-          <div class="social-stats">
-            <div class="social-stat-row"><span>Plant Health</span><b id="cardHealthValue">89%</b></div>
-            <div class="social-meter"><i id="cardHealthBar" style="width:89%"></i></div>
-            <div class="social-stat-row"><span>Owner Skill</span><b>21%</b></div>
-            <div class="social-meter danger"><i style="width:21%"></i></div>
+          <div class="health-control">
+            <div class="health-control__top"><span>🧪 Plant Health Damage</span><strong data-health-value>89%</strong></div>
+            <input type="range" min="0" max="100" value="89" data-health-slider aria-label="Plant Health" />
+            <div class="health-scale"><span>💀 0</span><span>50</span><span>100 🌱</span></div>
           </div>
 
-          <div id="cardRoast" class="social-roast">“รอดมาได้ไม่ใช่เพราะเจ้าของ แต่เพราะพันธุกรรม”</div>
-          <div class="social-award">🏆 เจ้าของที่ต้นไม้ไม่เคยร้องขอ</div>
-          <div class="social-tags">#Ungrow &nbsp; #PlantRoast &nbsp; #SnakePlant</div>
-          <div class="social-source">Open Source · github.com/kinatoshi99/ungrow</div>
-        </article>
+          <div class="roast-box" data-roast>“รอดมาได้ไม่ใช่เพราะเจ้าของ แต่เพราะพันธุกรรม”</div>
+          <div class="actions">
+            <button class="action-btn" type="button" data-action="roast">🔥 ROAST ME</button>
+            <button class="action-btn secondary" type="button" data-action="shame">📸 SHAME ME</button>
+          </div>
+          <p class="mobile-hint">Social Card ถูก render แยกจาก UI นี้แล้ว จอจะเล็กแค่ไหน PNG ก็ไม่เพี้ยน 😎</p>
+        </div>
+        <footer class="app-footer"><span>Mobile UI · Thumb friendly.</span><a href="https://github.com/kinatoshi99/ungrow" target="_blank" rel="noreferrer">GitHub ↗</a></footer>
+      </div>
+    </section>
 
-        <canvas id="shareCanvas" width="1080" height="1350" aria-hidden="true"></canvas>
-      </section>
-
-      <footer>
-        <span>Open Source · No AI · No DB · Just nonsense.</span>
-        <a href="https://github.com/kinatoshi99/ungrow" target="_blank" rel="noreferrer">GitHub ↗</a>
-      </footer>
+    <section id="exportLab" class="export-lab" hidden aria-label="Export card lab">
+      <div class="export-head">
+        <div><div class="export-kicker">EXPORT CARD · 1080×1350</div><h2>Social Card Renderer 📸</h2></div>
+      </div>
+      <div class="export-grid">
+        <div class="export-controls">
+          <div class="health-control">
+            <div class="health-control__top"><span>🧪 Export Health</span><strong data-health-value>89%</strong></div>
+            <input type="range" min="0" max="100" value="89" data-health-slider aria-label="Export Plant Health" />
+            <div class="health-scale"><span>💀 0</span><span>50</span><span>100 🌱</span></div>
+          </div>
+          <div class="condition">
+            <strong data-condition-title>เริ่มช้ำใจ</strong>
+            <span data-condition-sub>มีแผลนิดหน่อย แต่ยังมีแรงด่าเจ้าของ</span>
+          </div>
+          <p class="export-note">Preview ด้านขวา/ด้านล่างคือ Canvas ตัวเดียวกับไฟล์ PNG จริง จึงไม่ขึ้นกับ layout ของมือถือหรือ desktop</p>
+          <button id="saveExportButton" class="action-btn save" type="button" disabled>⏳ PREPARING PNG...</button>
+          <div id="exportStatus" class="export-status" aria-live="polite"></div>
+        </div>
+        <div class="export-preview-wrap">
+          <canvas id="exportCanvas" class="export-canvas" width="1080" height="1350" aria-label="Ungrow social card preview"></canvas>
+        </div>
+      </div>
     </section>
   </main>
-  <script src="plant-svg.js?v=iossave1"></script>
-  <script src="app.js?v=iossave1"></script>
+
+  <script src="plant-svg.js?v=refactor1"></script>
+  <script src="app.js?v=refactor1"></script>
 </body>
 </html>
