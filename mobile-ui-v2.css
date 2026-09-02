@@ -62,3 +62,4 @@
   .mobile-health-control input[type=range]{display:block;min-width:0;max-width:100%;margin-left:0;margin-right:0}
   .mobile-topline>*{min-width:0}
 }
+@media(max-width:767px){.mobile-character-selector{display:grid;grid-template-columns:1fr 1fr;width:100%;margin-top:12px}.mobile-character-selector button{width:100%;padding:0 12px}.mobile-title{margin-top:16px}}

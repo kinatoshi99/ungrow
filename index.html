@@ -5,10 +5,10 @@
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
   <meta name="description" content="Ungrow v0.0.1 — SOMCHAI Roast Button. An anti-plant-care open source joke project." />
   <title>Ungrow v0.0.1 — SOMCHAI Roast Button</title>
-  <link rel="stylesheet" href="ui-base.css?v=canvasfix2" />
-  <link rel="stylesheet" href="desktop-ui.css?v=canvasfix2" />
-  <link rel="stylesheet" href="mobile-ui-v2.css?v=canvasfix2" />
-  <link rel="stylesheet" href="export-card.css?v=canvasfix2" />
+  <link rel="stylesheet" href="ui-base.css?v=characters1" />
+  <link rel="stylesheet" href="desktop-ui.css?v=characters1" />
+  <link rel="stylesheet" href="mobile-ui-v2.css?v=characters1" />
+  <link rel="stylesheet" href="export-card.css?v=characters1" />
 </head>
 <body>
   <main id="appRoot">
@@ -17,7 +17,11 @@
         <div class="desktop-hero">
           <div class="desktop-copy">
             <div class="brand">🌱💀 UNGROW v0.0.1</div>
-            <h1 class="title">SOMCHAI<span>Roast Button</span></h1>
+            <div class="character-selector" role="group" aria-label="เลือกตัวละครต้นไม้">
+              <button type="button" data-character-id="somchai" aria-pressed="true">SOMCHAI</button>
+              <button type="button" data-character-id="ploy" aria-pressed="false">PLOY</button>
+            </div>
+            <h1 class="title"><b data-character-name>SOMCHAI</b><span>Roast Button</span></h1>
             <p class="subtitle">Anti-Plant Care Project · Helping plants survive their owners.</p>
             <div class="roast-box" data-roast>“รอดมาได้ไม่ใช่เพราะเจ้าของ แต่เพราะพันธุกรรม”</div>
             <div class="actions">
@@ -27,7 +31,7 @@
           </div>
           <div class="desktop-panel">
             <div class="desktop-plant-wrap">
-              <div class="plant-stage"><svg data-plant-svg viewBox="0 0 320 320" role="img" aria-label="SOMCHAI plant health illustration"></svg></div>
+              <div class="plant-stage"><svg data-plant-svg data-character-plant-label viewBox="0 0 320 320" role="img" aria-label="SOMCHAI plant health illustration"></svg></div>
               <div class="condition"><strong data-condition-title>เริ่มช้ำใจ</strong><span data-condition-sub>มีแผลนิดหน่อย แต่ยังมีแรงด่าเจ้าของ</span></div>
             </div>
             <div class="desktop-controls">
@@ -39,8 +43,8 @@
               <div class="stats-card">
                 <div class="stat-row"><span>Plant Health</span><b data-health-value>89%</b></div>
                 <div class="meter"><i data-health-bar style="width:89%"></i></div>
-                <div class="stat-row"><span>Owner Skill</span><b>21%</b></div>
-                <div class="meter owner"><i style="width:21%"></i></div>
+                <div class="stat-row"><span>Owner Skill</span><b data-owner-skill-value>21%</b></div>
+                <div class="meter owner"><i data-owner-skill-bar style="width:21%"></i></div>
               </div>
             </div>
           </div>
@@ -56,13 +60,17 @@
             <div class="brand">🌱💀 UNGROW v0.0.1</div>
             <a class="mobile-repo" href="https://github.com/kinatoshi99/ungrow" target="_blank" rel="noreferrer">GitHub ↗</a>
           </div>
-          <h1 class="mobile-title">SOMCHAI</h1>
-          <p class="mobile-meta">Snake Plant · Stoic Introvert</p>
+          <div class="character-selector mobile-character-selector" role="group" aria-label="เลือกตัวละครต้นไม้">
+            <button type="button" data-character-id="somchai" aria-pressed="true">SOMCHAI</button>
+            <button type="button" data-character-id="ploy" aria-pressed="false">PLOY</button>
+          </div>
+          <h1 class="mobile-title" data-character-name>SOMCHAI</h1>
+          <p class="mobile-meta" data-character-subtitle>Snake Plant · Stoic Introvert</p>
         </header>
 
-        <section class="mobile-play" aria-label="SOMCHAI roast controls">
+        <section class="mobile-play" data-character-section-label aria-label="SOMCHAI roast controls">
           <div class="mobile-plant-card">
-            <div class="plant-stage"><svg data-plant-svg viewBox="0 0 320 320" role="img" aria-label="SOMCHAI plant health illustration"></svg></div>
+            <div class="plant-stage"><svg data-plant-svg data-character-plant-label viewBox="0 0 320 320" role="img" aria-label="SOMCHAI plant health illustration"></svg></div>
             <div class="condition"><strong data-condition-title>เริ่มช้ำใจ</strong><span data-condition-sub>มีแผลนิดหน่อย แต่ยังมีแรงด่าเจ้าของ</span></div>
           </div>
 
@@ -73,8 +81,8 @@
               <div class="health-scale"><span>💀 0</span><span>50</span><span>100 🌱</span></div>
             </div>
             <div class="mobile-owner-skill">
-              <div class="stat-row"><span>Owner Skill</span><b>21%</b></div>
-              <div class="meter owner"><i style="width:21%"></i></div>
+              <div class="stat-row"><span>Owner Skill</span><b data-owner-skill-value>21%</b></div>
+              <div class="meter owner"><i data-owner-skill-bar style="width:21%"></i></div>
             </div>
           </div>
 
@@ -129,7 +137,9 @@
       <canvas id="exportCanvas" class="export-canvas" width="1080" height="1350" aria-label="Ungrow social card preview"></canvas>
     </div>
   </main>
-  <script src="plant-svg.js?v=canvasfix2"></script>
-  <script src="app.js?v=verticalflow1"></script>
+  <script src="plant-svg.js?v=characters1"></script>
+  <script src="ploy-svg.js?v=characters1"></script>
+  <script src="characters.js?v=characters1"></script>
+  <script src="app.js?v=characters1"></script>
 </body>
 </html>
