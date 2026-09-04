@@ -1,6 +1,23 @@
 # Ungrow handoff — 2026-09-03 (Asia/Bangkok)
 
 
+## Latest work: Desktop UI v3 — Sidebar + Canvas + Bottom Action Dock — 2026-09-04
+
+Desktop was restructured from the previous hero/controls/cards layout into a playground-style application shell. Mobile markup and mobile CSS remain unchanged.
+
+- Top bar: compact brand, SOMCHAI/PLOY switcher, compact Daily Disaster status, GitHub link.
+- Sidebar (280 px on standard desktop): Roast Mode, the single authoritative Plant Health control, Owner Skill, current condition, and small Daily metadata.
+- Main Canvas: enlarged plant character stage, 42–58 px character identity, condition chip, prominent roast bubble, and a deliberately secondary meme reaction.
+- Bottom Action Dock: all desktop actions live together — Roast is the single primary action; Shame/Resignation are strong secondary actions; Share/Speech are utilities.
+- Removed desktop duplicate Plant Health card, giant SOMCHAI hero treatment, large Daily banner, scattered action group, and duplicate desktop Resignation Generator entry.
+- Existing state/event bindings were reused through the same data attributes; app.js, ui-base.css, and mobile-ui-v2.css were not modified.
+- Added tests/desktop-ui-v3.test.cjs to lock the v3 structure, single Health source, compact Daily placement, dock actions, breakpoints, and presence of existing mobile actions.
+- Fixed one pre-existing test-environment regression in resignation-ui.js: the UI now skips bootstrap when a minimal non-browser DOM double does not implement querySelector. Real browsers are unaffected.
+- Validation on the connected Mac: node --check app.js, resignation.js, resignation-ui.js; node --test tests/*.test.cjs = 34/34 passed.
+- Headless Chrome screenshots were generated at 1280, 1366, 1440, and 1536 px widths for desktop QA.
+
+
+
 ## Latest work: Plant Resignation Generator — 2026-09-04
 
 Added the complete Plant Resignation Generator flow without a framework, backend, or new dependency. The main Plant Health state remains authoritative; the generator never asks for a duplicate Health value.
