@@ -1,6 +1,21 @@
 # Ungrow handoff — 2026-09-03 (Asia/Bangkok)
 
 
+## Latest work: SHAME ME Paper-Cut Reaction Social Cards — 2026-09-04
+
+The Social Card export now uses the 12 concepts from the Ungrow Messy Paper-Cut Meme Comic sheet as the main card artwork instead of the old health-reactive plant SVG + small reaction sticker composition.
+
+- Added `shame-reactions.js`: 12 native Canvas reaction assets — Mugshot, Judging, Slow Clap, Tea Sip, Confused, Whisper Duo, Chaos, Megaphone, This Is Fine, Dead Inside, Resignation, Survivor.
+- Reaction selection is deterministic from Plant Health + character + roast mode + roast index + Daily key.
+- Health progression moves from sarcastic/judging reactions into warning, emergency and critical reactions.
+- Social Card keeps the existing 1080×1350 export, stats, roast quote, condition, Daily context and branding.
+- Reaction Leaf is now the hero artwork; a paper-cut card backing and context hook label reinforce the messy cutout style.
+- Playground meme previews remain on the existing `memes.js` system to avoid changing the main UI in this task.
+- Added `tests/shame-reactions.test.cjs` for the 12-asset catalog, health bands, deterministic selection, critical mapping and Social Card wiring.
+- No framework, package or backend dependency added.
+
+
+
 ## Latest work: Desktop UI v3 — Sidebar + Canvas + Bottom Action Dock — 2026-09-04
 
 Desktop was restructured from the previous hero/controls/cards layout into a playground-style application shell. Mobile markup and mobile CSS remain unchanged.

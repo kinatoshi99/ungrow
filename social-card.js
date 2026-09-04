@@ -130,7 +130,7 @@
     ctx.restore();
   }
 
-  function render(ctx, { character, health, condition, roast, award, daily, plantImage, meme, memeImage }) {
+  function render(ctx, { character, health, condition, roast, award, daily, reaction }) {
     const theme = themeFor(health);
     ctx.save();
     ctx.clearRect(0, 0, 1080, 1350);
@@ -153,16 +153,42 @@
     ctx.fillStyle = theme.foreground;
     fitText(ctx, character.subtitle, { x: 60, y: 256, width: 940, height: 40, size: 28 });
 
-    // The existing health-reactive artwork remains the source of truth.
+    // SHAME ME now uses the paper-cut reaction system as the card hero.
+    // The 12 reactions are native Canvas artwork, so exported PNGs stay crisp
+    // without depending on the small meme stickers used in the Playground UI.
+    ctx.save();
+    ctx.shadowColor = "rgba(23,59,42,.24)";
+    ctx.shadowBlur = 20;
+    ctx.shadowOffsetY = 12;
+    ctx.fillStyle = "#efe3c8";
+    ctx.translate(54, 318);
+    ctx.rotate(-1.3 * Math.PI / 180);
+    ctx.fillRect(0, 0, 616, 492);
+    ctx.restore();
+
+    ctx.save();
     ctx.fillStyle = PAPER;
-    ctx.beginPath();
-    ctx.ellipse(285, 581, 211, 206, -.1, 0, Math.PI * 2);
-    ctx.fill();
-    star(ctx, 495, 417, 24, theme.accent);
-    star(ctx, 63, 754, 18, theme.accent);
-    ctx.drawImage(plantImage, 27, 315, 500, 500);
+    ctx.translate(64, 306);
+    ctx.rotate(.8 * Math.PI / 180);
+    ctx.fillRect(0, 0, 596, 488);
+    ctx.restore();
+
+    star(ctx, 675, 389, 22, theme.accent);
+    star(ctx, 74, 770, 16, theme.accent);
+    window.UngrowShameReactions.draw(ctx, reaction, { x: 360, y: 556, size: 540 });
+
+    ctx.save();
+    ctx.translate(825, 560);
+    ctx.rotate(-3 * Math.PI / 180);
+    ctx.fillStyle = theme.critical ? RED : theme.accent;
+    ctx.fillRect(-155, -70, 310, 140);
+    ctx.fillStyle = theme.critical ? PAPER : theme.background;
+    fitText(ctx, reaction.hook, {
+      x: -137, y: -55, width: 274, height: 110, size: 28, minSize: 19, weight: 900, center: true
+    });
+    ctx.restore();
+
     drawStamp(ctx, theme.stamp, theme);
-    drawMeme(ctx, meme, memeImage);
 
     ctx.fillStyle = theme.foreground;
     ctx.fillRect(60, 830, 960, 2);
