@@ -9,6 +9,7 @@
   <link rel="stylesheet" href="desktop-ui.css?v=meme2" />
   <link rel="stylesheet" href="mobile-ui-v2.css?v=meme2" />
   <link rel="stylesheet" href="export-card.css?v=meme2" />
+  <link rel="stylesheet" href="resignation.css?v=resign1" />
 </head>
 <body>
   <main id="appRoot">
@@ -17,6 +18,7 @@
         <div class="desktop-hero">
           <div class="desktop-copy">
             <div class="brand">🌱💀 UNGROW v0.0.1</div>
+            <button class="resignation-entry-btn" type="button" data-action="resignation-hub">💀 RESIGNATION GENERATOR</button>
             <div class="character-selector" role="group" aria-label="เลือกตัวละครต้นไม้">
               <button type="button" data-character-id="somchai" aria-pressed="true">SOMCHAI</button>
               <button type="button" data-character-id="ploy" aria-pressed="false">PLOY</button>
@@ -45,6 +47,7 @@
             <div class="actions">
               <button class="action-btn" type="button" data-action="roast">🔥 ROAST ME</button>
               <button class="action-btn secondary" type="button" data-action="shame">📸 SHAME ME</button>
+              <button class="action-btn secondary" type="button" data-action="resignation">💀 WRITE MY RESIGNATION</button>
               <button class="share-link-btn" type="button" data-action="share-link">🔗 SHARE THIS DISASTER</button>
             </div>
           </div>
@@ -79,6 +82,7 @@
             <div class="brand">🌱💀 UNGROW v0.0.1</div>
             <a class="mobile-repo" href="https://github.com/kinatoshi99/ungrow" target="_blank" rel="noreferrer">GitHub ↗</a>
           </div>
+          <button class="resignation-entry-btn mobile-resignation-hub" type="button" data-action="resignation-hub">💀 PLANT RESIGNATION GENERATOR</button>
           <div class="character-selector mobile-character-selector" role="group" aria-label="เลือกตัวละครต้นไม้">
             <button type="button" data-character-id="somchai" aria-pressed="true">SOMCHAI</button>
             <button type="button" data-character-id="ploy" aria-pressed="false">PLOY</button>
@@ -129,6 +133,7 @@
           </div>
 
           <button class="action-btn secondary mobile-shame-btn" type="button" data-action="shame">📸 ทำการ์ดประจาน</button>
+          <button class="action-btn secondary mobile-resignation-btn" type="button" data-action="resignation">💀 เขียนใบลาออกให้ฉัน</button>
           <button class="action-btn mobile-share-btn" type="button" data-action="share-link">🔗 แชร์ลิงก์นี้</button>
         </section>
       </div>
@@ -172,6 +177,8 @@
     </section>
 
 
+    <section id="resignationView" class="resignation-view" hidden aria-label="Plant Resignation Generator"></section>
+
     <dialog id="ageGateDialog" class="age-gate" aria-labelledby="ageGateTitle">
       <div class="age-gate-card">
         <div class="age-gate-kicker">☠️ UNGROW AFTER DARK</div>
@@ -202,6 +209,8 @@
   <script src="memes.js?v=meme2"></script>
   <script src="social-card.js?v=meme2"></script>
   <script src="speech.js?v=meme2"></script>
+  <script src="resignation.js?v=resign1"></script>
   <script src="app.js?v=meme2"></script>
+  <script src="resignation-ui.js?v=resign1"></script>
 </body>
 </html>

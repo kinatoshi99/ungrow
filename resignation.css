@@ -1,0 +1,63 @@
+body.resignation-open{overflow:hidden}
+.resignation-view{position:fixed;inset:0;z-index:80;overflow:auto;background:rgba(18,29,22,.78);padding:clamp(10px,3vw,32px)}
+.resignation-view[hidden]{display:none!important}
+.resignation-shell{width:min(1040px,100%);min-height:calc(100dvh - clamp(20px,6vw,64px));margin:0 auto;background:#f1eadc;border:2px solid var(--ink);border-radius:28px;box-shadow:12px 12px 0 var(--ink);padding:clamp(18px,4vw,36px)}
+.resignation-head{display:grid;grid-template-columns:auto 1fr auto;align-items:start;gap:18px;padding-bottom:20px;border-bottom:2px solid var(--ink)}
+.resignation-head h2{margin:2px 0 0;font-size:clamp(28px,5vw,50px);line-height:1;letter-spacing:-.04em}
+.resignation-head p{margin:8px 0 0;color:var(--muted);font-weight:750}
+.resignation-kicker{font-size:12px;font-weight:900;letter-spacing:.08em;color:var(--green)}
+.resignation-back-app,.resignation-close,.resignation-inline-back{appearance:none;border:1px solid var(--line);background:var(--paper);color:var(--ink);font:inherit;font-weight:900;cursor:pointer}
+.resignation-back-app{min-height:44px;padding:0 14px;border-radius:999px}
+.resignation-close{width:44px;height:44px;border-radius:50%;font-size:28px;line-height:1}
+.resignation-hub-picker{margin-top:22px;padding:16px;border:1px solid var(--line);border-radius:18px;background:#fffaf0}
+.resignation-hub-picker>span{display:block;margin-bottom:10px;font-weight:900}
+.resignation-character-buttons{display:flex;flex-wrap:wrap;gap:8px}
+.resignation-character-buttons button{appearance:none;min-height:42px;padding:0 18px;border:2px solid var(--ink);border-radius:999px;background:var(--paper);font:inherit;font-weight:900;cursor:pointer}
+.resignation-character-buttons button[aria-pressed="true"]{background:var(--ink);color:var(--paper)}
+.resignation-generator{display:grid;gap:20px;padding-top:24px}
+.resignation-profile{display:grid;grid-template-columns:minmax(260px,.8fr) minmax(0,1.2fr);gap:26px;align-items:center;background:#fffaf0;border:1px solid var(--line);border-radius:24px;padding:22px}
+.resignation-plant-stage{min-width:0;background:#f7f2e8;border-radius:20px}
+.resignation-plant-stage svg{display:block;width:100%;height:auto}
+.resignation-profile-copy{min-width:0}
+.resignation-overline{font-size:12px;font-weight:900;letter-spacing:.12em;color:var(--muted)}
+.resignation-profile-copy h3{margin:6px 0 2px;font-size:clamp(46px,8vw,80px);line-height:.95;letter-spacing:-.06em}
+.resignation-profile-copy>p{margin:8px 0 18px;color:var(--muted);font-weight:750}
+.resignation-health-line{display:flex;justify-content:space-between;align-items:end;gap:12px;font-weight:900}
+.resignation-health-line strong{font-size:40px;line-height:1}
+.resignation-health-meter{height:14px;margin-top:8px;background:#d8d0c0;border-radius:99px;overflow:hidden}
+.resignation-health-meter i{display:block;height:100%;background:var(--green);border-radius:inherit}
+.resignation-status{display:inline-flex;align-items:center;min-height:42px;margin-top:18px;padding:0 14px;border:4px solid var(--green);color:var(--green);font-weight:950;letter-spacing:.06em;transform:rotate(-2deg)}
+.resignation-status[data-mode="immediate"]{border-color:#b42318;color:#b42318}
+.resignation-mode-copy{font-size:14px!important;line-height:1.5}
+.resignation-generator-note{display:flex;flex-wrap:wrap;justify-content:space-between;gap:8px 18px;padding:15px 18px;border:1px dashed var(--green);border-radius:16px;background:rgba(216,255,62,.16)}
+.resignation-generator-note span{color:var(--muted);font-size:13px;font-weight:750}
+.resignation-primary,.resignation-action{appearance:none;border:2px solid var(--ink);border-radius:16px;font:inherit;font-weight:950;cursor:pointer;min-height:56px;padding:0 18px}
+.resignation-primary{background:var(--ink);color:var(--paper);font-size:17px}
+.resignation-action{background:var(--paper);color:var(--ink)}
+.resignation-action.danger{background:#b42318;color:#fff;border-color:#b42318}
+.resignation-result{padding-top:24px}
+.resignation-result-top{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:14px;color:var(--muted);font-size:13px;font-weight:850}
+.resignation-inline-back{min-height:40px;padding:0 12px;border-radius:999px}
+.resignation-card-frame{width:min(680px,100%);margin:0 auto;background:#d9d0c0;border-radius:22px;padding:10px}
+.resignation-card-frame canvas{display:block;width:100%;height:auto;aspect-ratio:4/5;border-radius:14px;background:#f1eadc;box-shadow:0 12px 34px rgba(23,59,42,.18)}
+.resignation-export-status{min-height:20px;margin:12px 0;text-align:center;color:var(--muted);font-size:13px;font-weight:750}
+.resignation-actions{display:grid;grid-template-columns:1.5fr 1fr 1fr 1fr;gap:10px}
+.resignation-entry-btn{appearance:none;border:1px solid var(--line);border-radius:999px;background:#fffaf0;color:var(--ink);min-height:38px;padding:0 13px;font:inherit;font-size:12px;font-weight:900;cursor:pointer}
+.desktop-copy>.resignation-entry-btn{margin-top:14px}
+.mobile-resignation-hub{width:100%;margin-top:10px}
+@media(max-width:767px){
+  .resignation-view{padding:0;background:#f1eadc}
+  .resignation-shell{min-height:100dvh;border:0;border-radius:0;box-shadow:none;padding:16px 14px calc(22px + env(safe-area-inset-bottom))}
+  .resignation-head{grid-template-columns:auto 1fr auto;gap:10px}
+  .resignation-back-app{font-size:0;width:44px;padding:0}.resignation-back-app::after{content:"←";font-size:22px}
+  .resignation-head h2{font-size:29px}.resignation-head p{font-size:13px}
+  .resignation-profile{grid-template-columns:1fr;padding:14px;gap:12px}
+  .resignation-plant-stage{width:min(72vw,300px);margin:0 auto}
+  .resignation-profile-copy h3{font-size:52px}
+  .resignation-health-line strong{font-size:34px}
+  .resignation-actions{grid-template-columns:1fr 1fr}
+  .resignation-actions .resignation-primary{grid-column:1/-1}
+  .resignation-card-frame{padding:6px;border-radius:16px}
+  .resignation-result-top{align-items:flex-start;flex-direction:column}
+}
+@media(max-width:380px){.resignation-head h2{font-size:25px}.resignation-kicker{font-size:10px}.resignation-actions{grid-template-columns:1fr}}

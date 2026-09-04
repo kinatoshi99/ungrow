@@ -1,5 +1,21 @@
 # Ungrow handoff — 2026-09-03 (Asia/Bangkok)
 
+
+## Latest work: Plant Resignation Generator — 2026-09-04
+
+Added the complete Plant Resignation Generator flow without a framework, backend, or new dependency. The main Plant Health state remains authoritative; the generator never asks for a duplicate Health value.
+
+- Primary entry point: `WRITE MY RESIGNATION` beside the existing `SHAME ME` action on desktop and mobile.
+- Secondary entry point: `RESIGNATION GENERATOR` from the main UI, with SOMCHAI/PLOY selection.
+- Static-host-safe navigation: `#/resignation` and `#/plants/:plantId/resignation`. Hash routing is intentional because direct path routing would 404 on GitHub Pages.
+- Health behavior: 71–100 COMPLAINT, 41–70 FINAL WARNING, 21–40 RESIGNED, 0–20 EFFECTIVE IMMEDIATELY.
+- `GENERATE AGAIN` uses deterministic local variation. The `ri` URL parameter reproduces the same generated letter when a resignation link is reopened.
+- Result card: dedicated 1080×1350 Canvas renderer with Plant avatar, Health, HR-style status stamp, reasons, roast, signature, Ungrow branding, Web Share fallback, and PNG download.
+- `SHAME ME` exits the resignation flow and reuses the existing social-card renderer.
+- `tests/resignation.test.cjs` covers thresholds, the requested 80/40/15 cases, deterministic regeneration, and share text.
+- Local isolated validation completed for the new files: `node --check resignation.js`, `node --check resignation-ui.js`, and `node --test tests/resignation.test.cjs` (4/4 passed). Full repository test execution still requires the local workspace/tunnel or CI.
+
+
 ## Latest work: original intent-aware meme reaction system
 
 The latest request replaced the previously bundled famous internet memes with original local reaction stickers. `memes.js` now maps the existing Health intent (`praise`, `sideEye`, `concerned`, `hard`, `disaster`) to three original SVG stickers per intent, 15 total. Selection is deterministic from character, Roast Mode, roast index, and Daily key, so shared URLs and Daily challenges reproduce the same reaction without new URL state.
