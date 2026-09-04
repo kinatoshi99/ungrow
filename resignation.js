@@ -207,20 +207,45 @@
     ctx.closePath();
   }
 
+  function textSegments(text) {
+    const value = String(text);
+    try {
+      if (typeof Intl?.Segmenter === "function") {
+        return [...new Intl.Segmenter("th", { granularity: "word" }).segment(value)].map(item => item.segment);
+      }
+    } catch (_) {}
+    return value.split(/(\s+)/).filter(Boolean);
+  }
+
   function wrapLines(ctx, text, maxWidth) {
-    const words = String(text).split(/\s+/);
+    const segments = textSegments(text);
     const lines = [];
     let line = "";
-    for (const word of words) {
-      const next = line ? `${line} ${word}` : word;
+    for (const segment of segments) {
+      const next = line + segment;
       if (line && ctx.measureText(next).width > maxWidth) {
-        lines.push(line);
-        line = word;
+        lines.push(line.trim());
+        line = segment.trimStart();
       } else {
         line = next;
       }
+
+      if (line && ctx.measureText(line).width > maxWidth) {
+        let chunk = "";
+        const chars = [...line];
+        line = "";
+        for (const char of chars) {
+          if (chunk && ctx.measureText(chunk + char).width > maxWidth) {
+            lines.push(chunk);
+            chunk = char;
+          } else {
+            chunk += char;
+          }
+        }
+        line = chunk;
+      }
     }
-    if (line) lines.push(line);
+    if (line.trim()) lines.push(line.trim());
     return lines;
   }
 
@@ -284,37 +309,38 @@
       ctx.drawImage(plantImage, 720, 350, 250, 160);
     }
 
-    let y = 575;
     ctx.fillStyle = "#101810";
-    ctx.font = "800 30px system-ui, sans-serif";
-    y = drawWrapped(ctx, letter.body, 70, y, 940, 44, 3) + 20;
-    ctx.font = "900 25px system-ui, sans-serif";
+    ctx.font = "800 28px system-ui, sans-serif";
+    drawWrapped(ctx, letter.body, 70, 575, 940, 40, 2);
+
+    ctx.font = "900 24px system-ui, sans-serif";
     ctx.fillStyle = "#173b2a";
-    ctx.fillText("เหตุผลที่ขอลาออก / ร้องเรียน", 70, y);
-    y += 45;
-    ctx.font = "700 24px system-ui, sans-serif";
+    ctx.fillText("เหตุผลที่ขอลาออก / ร้องเรียน", 70, 685);
+
+    let reasonsY = 730;
+    ctx.font = "700 21px system-ui, sans-serif";
     ctx.fillStyle = "#101810";
     letter.reasons.forEach((reason, index) => {
-      y = drawWrapped(ctx, `${index + 1}. ${reason}`, 84, y, 900, 36, 2) + 15;
+      reasonsY = drawWrapped(ctx, `${index + 1}. ${reason}`, 84, reasonsY, 900, 30, 2) + 8;
     });
 
-    y += 8;
+    const roastY = Math.min(1020, Math.max(985, reasonsY + 8));
     ctx.fillStyle = "#d8ff3e";
-    roundedRect(ctx, 70, y, 940, 150, 22);
+    roundedRect(ctx, 70, roastY, 940, 132, 22);
     ctx.fill();
     ctx.fillStyle = "#173b2a";
-    ctx.font = "900 27px system-ui, sans-serif";
-    drawWrapped(ctx, `“${letter.roast}”`, 105, y + 52, 870, 38, 2);
-    y += 190;
+    ctx.font = "900 25px system-ui, sans-serif";
+    drawWrapped(ctx, `“${letter.roast}”`, 105, roastY + 46, 870, 35, 2);
 
+    const closingY = roastY + 165;
     ctx.fillStyle = "#526056";
-    ctx.font = "700 22px system-ui, sans-serif";
-    ctx.fillText(letter.effective, 70, y);
+    ctx.font = "700 20px system-ui, sans-serif";
+    drawWrapped(ctx, letter.effective, 70, closingY, 940, 28, 1);
     ctx.fillStyle = "#101810";
-    ctx.font = "700 21px system-ui, sans-serif";
-    ctx.fillText(letter.signoff, 70, y + 48);
-    ctx.font = "900 34px system-ui, sans-serif";
-    ctx.fillText(letter.plantName, 70, y + 92);
+    ctx.font = "700 19px system-ui, sans-serif";
+    ctx.fillText(letter.signoff, 70, closingY + 38);
+    ctx.font = "900 31px system-ui, sans-serif";
+    ctx.fillText(letter.plantName, 70, closingY + 78);
 
     ctx.fillStyle = "#173b2a";
     ctx.fillRect(0, 1288, width, 62);
