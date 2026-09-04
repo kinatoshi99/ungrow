@@ -3,7 +3,7 @@
 
   const engine = window.UngrowResignation;
   const view = document.querySelector("#resignationView");
-  if (!engine || !view) return;
+  if (!engine || !view || typeof view.querySelector !== "function") return;
 
   const ROUTE_HUB = "#/resignation";
   const ROUTE_RE = /^#\/plants\/([a-z0-9_-]+)\/resignation$/i;
