@@ -128,6 +128,15 @@ function currentMeme() {
     daily: currentDailyChallenge()
   });
 }
+function currentShameReaction() {
+  return window.UngrowShameReactions.select({
+    health: state.health,
+    character: currentCharacter(),
+    roastMode: state.roastMode,
+    roastIndex: state.roastIndex,
+    daily: currentDailyChallenge()
+  });
+}
 function currentPlantRenderer() { return plantRenderers[currentCharacter().rendererId] || plantRenderers.somchai; }
 function getCondition(health = state.health) {
   const conditions = currentCharacter().conditions;
@@ -366,38 +375,31 @@ function canvasBlob(canvas) {
   return new Promise(resolve => canvas.toBlob(resolve, "image/png", 1));
 }
 
-const loadMemeImage = window.UngrowMemes.createImageLoader();
-
 async function renderExportCard() {
   const token = ++exportRenderToken;
   const character = currentCharacter();
-  const renderer = currentPlantRenderer();
   const health = state.health;
   const card = {
     character, health, condition: getCondition(), roast: currentRoast(),
     award: currentAward(), daily: currentDailyChallenge(),
     roastMode: state.roastMode, roastIndex: state.roastIndex
   };
-  const meme = currentMeme();
+  const reaction = currentShameReaction();
   latestExportBlob = null;
   setExportButtons(true, "⏳ กำลังทำการ์ด...");
   setExportStatus("กำลังเตรียมการ์ดประจาน...");
 
   try {
-    const [plantImage, memeImage] = await Promise.all([
-      svgToImage(renderer.buildStandalone(health)),
-      loadMemeImage(meme),
-      document.fonts?.ready || Promise.resolve()
-    ]);
+    await (document.fonts?.ready || Promise.resolve());
     if (token !== exportRenderToken) return;
-    window.UngrowSocialCard.render(exportCanvas.getContext("2d"), { ...card, plantImage, meme, memeImage });
-    exportCanvas.setAttribute("aria-label", `การ์ด ${character.name} · Health ${health}% · ${card.roast} · มีม ${meme.name}`);
+    window.UngrowSocialCard.render(exportCanvas.getContext("2d"), { ...card, reaction });
+    exportCanvas.setAttribute("aria-label", `การ์ด ${character.name} · Health ${health}% · ${card.roast} · Reaction ${reaction.name}`);
     const blob = await canvasBlob(exportCanvas);
     if (token !== exportRenderToken) return;
     if (!blob) throw new Error("PNG encoding failed");
     latestExportBlob = blob;
     setExportButtons(false, supportsFileShare() ? "📤 SAVE / SHARE PNG" : "⬇️ DOWNLOAD PNG");
-    setExportStatus(`การ์ด ${character.name} พร้อมแล้ว · Health ${health}% · ${meme.name}`);
+    setExportStatus(`การ์ด ${character.name} พร้อมแล้ว · Health ${health}% · ${reaction.name}`);
   } catch (_) {
     if (token !== exportRenderToken) return;
     latestExportBlob = null;
